@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw source footage — too large for git (single files exceed GitHub's 100MB
+# limit) and not referenced by the site. Kept locally only.
+/public/images/PeaceCamp2025/
