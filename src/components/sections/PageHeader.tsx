@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Section";
+import { Reveal } from "@/components/ui/motion";
 
 export function PageHeader({
   eyebrow,
@@ -30,7 +31,7 @@ export function PageHeader({
 
       <div className={image ? "bg-purple text-on-purple" : undefined}>
         <Container className="py-14 md:py-20">
-          <div className="max-w-3xl space-y-5">
+          <Reveal className="max-w-3xl space-y-5">
             <Eyebrow className="text-yellow">{eyebrow}</Eyebrow>
             <h1 className="text-4xl font-semibold leading-[1.1] md:text-5xl">
               {title}
@@ -40,7 +41,7 @@ export function PageHeader({
                 {intro}
               </p>
             )}
-          </div>
+          </Reveal>
         </Container>
       </div>
     </section>

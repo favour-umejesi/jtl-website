@@ -4,6 +4,7 @@ import { Section, Eyebrow } from "@/components/ui/Section";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { IconChevronLeft } from "@/components/ui/icons";
 import { LikeButton } from "@/components/sections/LikeButton";
+import { Reveal, HoverZoom } from "@/components/ui/motion";
 import type { PostDetail } from "@/lib/payload-data";
 
 export function PostArticle({
@@ -22,7 +23,7 @@ export function PostArticle({
   return (
     <>
       <Section tone="purple">
-        <div className="space-y-5">
+        <Reveal className="space-y-5">
           <Link
             href={backHref}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-yellow hover:underline"
@@ -34,7 +35,7 @@ export function PostArticle({
             {post.title}
           </h1>
           {meta && <Eyebrow className="text-dust">{meta}</Eyebrow>}
-        </div>
+        </Reveal>
       </Section>
 
       <Section tone="surface">
@@ -44,12 +45,14 @@ export function PostArticle({
           )}
 
           {post.image && (
-            <ImagePlaceholder
-              src={post.image}
-              rounded="rounded-none"
-              className="aspect-[16/9] w-full"
-              label={post.title}
-            />
+            <HoverZoom className="overflow-hidden">
+              <ImagePlaceholder
+                src={post.image}
+                rounded="rounded-none"
+                className="aspect-[16/9] w-full"
+                label={post.title}
+              />
+            </HoverZoom>
           )}
 
           {hasBody ? (

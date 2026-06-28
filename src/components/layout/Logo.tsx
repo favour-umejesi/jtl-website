@@ -68,16 +68,16 @@ export function Logo({
         </span>
       )}
 
-      <span className={`font-body leading-[0.82] ${wordColor}`}>
-        <span className={`block font-extrabold uppercase tracking-wide ${titleSize}`}>
+      <span className={`font-heading leading-[0.9] ${wordColor}`}>
+        <span className={`block font-semibold uppercase tracking-wide ${titleSize}`}>
           Justice
         </span>
         <span
-          className={`-my-1 block font-script font-bold leading-none lowercase text-yellow ${throughSize}`}
+          className={`-my-0.5 block font-medium italic lowercase leading-none text-yellow ${throughSize}`}
         >
           through
         </span>
-        <span className={`block font-extrabold uppercase tracking-wide ${titleSize}`}>
+        <span className={`block font-semibold uppercase tracking-wide ${titleSize}`}>
           Literacy
         </span>
       </span>

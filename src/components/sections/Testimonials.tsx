@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Eyebrow } from "@/components/ui/Section";
 import { Avatar } from "@/components/ui/Avatar";
 import {
@@ -13,6 +14,7 @@ type Testimonial = { quote: string; name: string; role: string };
 
 export function Testimonials({ items }: { items: Testimonial[] }) {
   const [index, setIndex] = useState(0);
+  const reduce = useReducedMotion();
   const count = items.length;
   const active = items[index];
 
@@ -39,16 +41,27 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
 
         <figure className="flex flex-1 flex-col items-center gap-7 rounded-none border border-dust/40 bg-surface px-6 py-10 text-center shadow-sm md:px-12">
           <IconQuote className="size-9 text-yellow" />
-          <blockquote className="max-w-3xl font-heading text-xl font-medium leading-snug text-ink md:text-2xl">
-            {active.quote}
-          </blockquote>
-          <figcaption className="flex items-center gap-3.5">
-            <Avatar name={active.name} className="size-12" />
-            <span className="text-left">
-              <span className="block font-semibold text-ink">{active.name}</span>
-              <span className="block text-sm text-purple">{active.role}</span>
-            </span>
-          </figcaption>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduce ? 0 : -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex flex-col items-center gap-7"
+            >
+              <blockquote className="max-w-3xl font-heading text-xl font-medium leading-snug text-ink md:text-2xl">
+                {active.quote}
+              </blockquote>
+              <figcaption className="flex items-center gap-3.5">
+                <Avatar name={active.name} className="size-12" />
+                <span className="text-left">
+                  <span className="block font-semibold text-ink">{active.name}</span>
+                  <span className="block text-sm text-purple">{active.role}</span>
+                </span>
+              </figcaption>
+            </motion.div>
+          </AnimatePresence>
         </figure>
 
         <button

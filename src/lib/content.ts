@@ -273,7 +273,7 @@ export const donate = {
     eyebrow: "Support Our Mission",
     title: "Literacy is not a privilege, it's a right",
     body: "In rural Nigeria, over 10.5 million children are out of school, often because families can't afford the resources or hold misconceptions about education. Your gift sponsors a child through MathLove Camp and into the classroom.",
-    image: "/images/donate.jpg",
+    image: "/images/donate-children.jpg",
   },
   tiers: [
     {
