@@ -1,5 +1,6 @@
 import { Eyebrow } from "@/components/ui/Section";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 import { getPartners } from "@/lib/payload-data";
 
 /**
@@ -10,8 +11,10 @@ export async function Partners() {
   const partners = await getPartners();
   return (
     <div className="flex flex-col items-center gap-6">
-      <Eyebrow className="text-ink-soft">Our partners &amp; supporters</Eyebrow>
-      <div className="grid w-full gap-3 sm:grid-cols-3">
+      <Reveal>
+        <Eyebrow className="text-ink-soft">Our partners &amp; supporters</Eyebrow>
+      </Reveal>
+      <Stagger className="grid w-full gap-3 sm:grid-cols-3">
         {partners.map((p) => {
           const logo = (
             <ImagePlaceholder
@@ -24,25 +27,28 @@ export async function Partners() {
             />
           );
           const cardClass =
-            "block rounded-none border border-dust/25 bg-surface-soft p-2";
-          return p.url ? (
-            <a
-              key={p.name}
-              href={p.url}
-              title={p.name}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${cardClass} transition-opacity hover:opacity-80`}
-            >
-              {logo}
-            </a>
-          ) : (
-            <div key={p.name} title={p.name} className={cardClass}>
-              {logo}
-            </div>
+            "block h-full rounded-none border border-dust/25 bg-surface-soft p-2";
+          return (
+            <StaggerItem key={p.name} hoverLift className="h-full">
+              {p.url ? (
+                <a
+                  href={p.url}
+                  title={p.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${cardClass} transition-opacity hover:opacity-80`}
+                >
+                  {logo}
+                </a>
+              ) : (
+                <div title={p.name} className={cardClass}>
+                  {logo}
+                </div>
+              )}
+            </StaggerItem>
           );
         })}
-      </div>
+      </Stagger>
     </div>
   );
 }

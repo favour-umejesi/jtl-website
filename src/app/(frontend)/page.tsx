@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/Button";
 import { OutlineFrame } from "@/components/ui/OutlineFrame";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { Testimonials } from "@/components/sections/Testimonials";
+import { VideoShowcase } from "@/components/sections/VideoShowcase";
 import { Partners } from "@/components/sections/Partners";
 import { CtaBand } from "@/components/sections/CtaBand";
+import { Reveal, Stagger, StaggerItem, CountUp } from "@/components/ui/motion";
 import { home } from "@/lib/content";
 import { getTestimonials } from "@/lib/payload-data";
 
@@ -45,85 +47,98 @@ export default async function HomePage() {
 
       {/* The challenge */}
       <Section tone="purple">
-        <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
-          <div>
+        <Stagger className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
+          <StaggerItem>
             <Eyebrow className="text-yellow">{home.challenge.eyebrow}</Eyebrow>
             <p className="mt-2 font-heading text-7xl font-semibold leading-none md:text-8xl">
-              {home.challenge.number}
+              <CountUp value={home.challenge.number} />
             </p>
             <p className="mt-2 text-lg text-dust">{home.challenge.unit}</p>
-          </div>
-          <div className="space-y-4">
+          </StaggerItem>
+          <StaggerItem className="space-y-4">
             <p className="font-heading text-2xl font-medium leading-snug md:text-3xl">
               {home.challenge.statement}
             </p>
             <p className="text-lg leading-relaxed text-dust">
               {home.challenge.hope}
             </p>
-          </div>
-        </div>
+          </StaggerItem>
+        </Stagger>
       </Section>
 
       {/* Mission */}
       <Section tone="surface">
-        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+        <Reveal className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
           <Eyebrow className="text-yellow">{home.mission.eyebrow}</Eyebrow>
           <p className="font-heading text-2xl font-medium leading-snug md:text-3xl">
             {home.mission.statement}
           </p>
-        </div>
+        </Reveal>
+      </Section>
+
+      {/* Event video */}
+      <Section tone="purple">
+        <Reveal>
+          <VideoShowcase video={home.video} />
+        </Reveal>
       </Section>
 
       {/* Programs */}
       <Section tone="soft">
         <div className="space-y-12">
-          <div className="space-y-3.5">
+          <Reveal className="space-y-3.5">
             <Eyebrow className="text-purple">{home.programs.eyebrow}</Eyebrow>
             <h2 className="text-3xl font-semibold md:text-4xl">
               {home.programs.title}
             </h2>
-          </div>
-          <div className="grid gap-8 md:grid-cols-3">
+          </Reveal>
+          <Stagger className="grid gap-8 md:grid-cols-3">
             {home.programs.cards.map((card) => (
-              <OutlineFrame key={card.title} color="yellow">
-                <article className="flex h-full flex-col gap-5 border border-dust/25 p-7">
-                  <ImagePlaceholder
-                    src={card.image}
-                    rounded="rounded-none"
-                    className="aspect-[16/10] w-full"
-                    label={card.title}
-                  />
-                  <h3 className="font-heading text-xl font-semibold">{card.title}</h3>
-                  <p className="text-[15px] leading-relaxed text-ink-soft">
-                    {card.body}
-                  </p>
-                </article>
-              </OutlineFrame>
+              <StaggerItem key={card.title} hoverLift className="h-full">
+                <OutlineFrame color="yellow">
+                  <article className="flex h-full flex-col gap-5 border border-dust/25 p-7">
+                    <ImagePlaceholder
+                      src={card.image}
+                      rounded="rounded-none"
+                      className="aspect-[16/10] w-full"
+                      label={card.title}
+                    />
+                    <h3 className="font-heading text-xl font-semibold">{card.title}</h3>
+                    <p className="text-[15px] leading-relaxed text-ink-soft">
+                      {card.body}
+                    </p>
+                  </article>
+                </OutlineFrame>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
 
       {/* Impact stats */}
       <Section tone="purple">
         <div className="space-y-10">
-          <h2 className="text-3xl font-semibold md:text-4xl">Our impact so far</h2>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <Reveal>
+            <h2 className="text-3xl font-semibold md:text-4xl">Our impact so far</h2>
+          </Reveal>
+          <Stagger className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {home.impactStats.map((stat) => (
-              <div key={stat.label} className="space-y-2">
+              <StaggerItem key={stat.label} className="space-y-2">
                 <p className="font-heading text-5xl font-semibold text-yellow">
-                  {stat.value}
+                  <CountUp value={stat.value} />
                 </p>
                 <p className="text-base leading-snug text-dust">{stat.label}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
 
       {/* Testimonials */}
       <Section tone="surface">
-        <Testimonials items={testimonials} />
+        <Reveal>
+          <Testimonials items={testimonials} />
+        </Reveal>
       </Section>
 
       {/* Partners */}

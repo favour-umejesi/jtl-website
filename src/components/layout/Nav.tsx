@@ -37,7 +37,7 @@ export function Nav() {
               <div key={item.href} className="group flex items-stretch">
                 <Link
                   href={item.href}
-                  className="relative flex items-center px-4 text-[15px] text-ink-soft transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:bg-purple after:transition-transform group-hover:text-purple group-hover:after:scale-x-100"
+                  className="relative flex items-center px-4 text-[13px] font-semibold uppercase tracking-[0.09em] text-ink-soft transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:bg-purple after:transition-transform group-hover:text-purple group-hover:after:scale-x-100"
                 >
                   {item.label}
                 </Link>
@@ -99,7 +99,7 @@ export function Nav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group/link relative flex items-center px-4 text-[15px] text-ink-soft transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:bg-purple after:transition-transform hover:text-purple hover:after:scale-x-100"
+                className="group/link relative flex items-center px-4 text-[13px] font-semibold uppercase tracking-[0.09em] text-ink-soft transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:bg-purple after:transition-transform hover:text-purple hover:after:scale-x-100"
               >
                 {item.label}
               </Link>
@@ -212,7 +212,7 @@ export function Nav() {
                 <Link
                   href={item.href}
                   onClick={close}
-                  className="block px-2 py-2.5 text-base font-medium text-ink hover:text-purple"
+                  className="block px-2 py-2.5 text-base font-semibold uppercase tracking-[0.09em] text-ink hover:text-purple"
                 >
                   {item.label}
                 </Link>

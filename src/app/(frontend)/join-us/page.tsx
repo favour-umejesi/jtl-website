@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { joinUs } from "@/lib/content";
 import { org } from "@/lib/site";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "Join Us" };
 
@@ -14,9 +15,9 @@ export default function JoinUsPage() {
 
       {/* Steps */}
       <Section tone="surface">
-        <ol className="space-y-6">
+        <Stagger className="space-y-6">
           {joinUs.steps.map((step) => (
-            <li
+            <StaggerItem
               key={step.n}
               className="flex items-center gap-6 rounded-none bg-surface-soft px-6 py-5"
             >
@@ -29,30 +30,32 @@ export default function JoinUsPage() {
                   {step.body}
                 </p>
               </div>
-            </li>
+            </StaggerItem>
           ))}
-        </ol>
+        </Stagger>
       </Section>
 
       {/* Roles */}
       <Section tone="soft">
         <div className="space-y-10">
-          <div className="space-y-3.5">
+          <Reveal className="space-y-3.5">
             <Eyebrow className="text-purple">Where you can help</Eyebrow>
             <h2 className="text-3xl font-semibold md:text-4xl">
               Roles we&apos;re looking for
             </h2>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          </Reveal>
+          <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {joinUs.roles.map((role) => (
-              <article key={role.title} className="space-y-3.5 rounded-none border border-dust/25 bg-surface p-7">
-                <h3 className="font-heading text-lg font-semibold">{role.title}</h3>
-                <p className="text-[15px] leading-relaxed text-ink-soft">
-                  {role.body}
-                </p>
-              </article>
+              <StaggerItem key={role.title} hoverLift className="h-full">
+                <article className="space-y-3.5 rounded-none border border-dust/25 bg-surface p-7">
+                  <h3 className="font-heading text-lg font-semibold">{role.title}</h3>
+                  <p className="text-[15px] leading-relaxed text-ink-soft">
+                    {role.body}
+                  </p>
+                </article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
 

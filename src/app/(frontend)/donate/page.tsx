@@ -3,7 +3,7 @@ import { Section, Eyebrow } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
-import { Reveal, Stagger, StaggerItem, Pop, HoverZoom } from "@/components/ui/motion";
+import { Reveal, Stagger, StaggerItem, HoverZoom } from "@/components/ui/motion";
 import { donate } from "@/lib/content";
 import { org } from "@/lib/site";
 
@@ -23,11 +23,9 @@ export default function DonatePage() {
             <p className="text-lg leading-relaxed text-dust">
               {donate.header.body}
             </p>
-            <Pop>
-              <Button href={org.donateUrl} variant="yellow">
-                Donate via GoFundMe
-              </Button>
-            </Pop>
+            <Button href={org.donateUrl} variant="yellow">
+              Donate via GoFundMe
+            </Button>
           </Reveal>
           <HoverZoom className="overflow-hidden">
             <ImagePlaceholder

@@ -1,7 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
-import type { ReactNode } from "react";
+import {
+  animate,
+  motion,
+  useInView,
+  useReducedMotion,
+  type Variants,
+} from "motion/react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -107,6 +113,68 @@ export function Pop({
     >
       {children}
     </motion.div>
+  );
+}
+
+/**
+ * Animated number that "counts up" from 0 to its value when it scrolls into
+ * view. Accepts the display string as-is (e.g. "$11K+", "10.5M", "50%") and
+ * preserves the prefix/suffix and decimal places while only the digits tick.
+ * Reduced-motion users just see the final value. Non-numeric strings render
+ * unchanged.
+ */
+const NUMBER_RE = /^(\D*)([\d.]+)(.*)$/;
+
+export function CountUp({
+  value,
+  className = "",
+  duration = 1.6,
+}: {
+  value: string;
+  className?: string;
+  duration?: number;
+}) {
+  const match = value.match(NUMBER_RE);
+  const isNumeric = match !== null;
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const reduce = useReducedMotion();
+
+  const target = match ? parseFloat(match[2]) : 0;
+  const prefix = match?.[1] ?? "";
+  const suffix = match?.[3] ?? "";
+  const decimals =
+    match && match[2].includes(".") ? match[2].split(".")[1].length : 0;
+
+  const [n, setN] = useState(0);
+
+  // Deps are all stable primitives — `match` (a fresh array each render) is
+  // deliberately kept out so the effect doesn't restart the animation every
+  // render. Reduced-motion users get the final value instantly (duration 0);
+  // setN only runs in animate's async onUpdate, never synchronously here.
+  useEffect(() => {
+    if (!isNumeric || !inView) return;
+    const controls = animate(0, target, {
+      duration: reduce ? 0 : duration,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (v) => setN(v),
+    });
+    return () => controls.stop();
+  }, [inView, reduce, isNumeric, target, duration]);
+
+  if (!match) return <span className={className}>{value}</span>;
+
+  const formatted = n.toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return (
+    <span ref={ref} className={className}>
+      {prefix}
+      {formatted}
+      {suffix}
+    </span>
   );
 }
 

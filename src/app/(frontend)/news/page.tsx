@@ -5,6 +5,7 @@ import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { news, newsEvent } from "@/lib/content";
 import { getPosts } from "@/lib/payload-data";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "News" };
 export const dynamic = "force-dynamic";
@@ -36,11 +37,13 @@ export default async function NewsPage() {
       {/* Articles */}
       <Section tone="surface">
         <div className="space-y-10">
-          <h2 className="text-3xl font-semibold md:text-4xl">Latest articles</h2>
-          <div className="grid gap-6 md:grid-cols-3">
+          <Reveal>
+            <h2 className="text-3xl font-semibold md:text-4xl">Latest articles</h2>
+          </Reveal>
+          <Stagger className="grid gap-6 md:grid-cols-3">
             {posts.slice(0, 6).map((post) => (
+              <StaggerItem key={post.slug} hoverLift>
               <Link
-                key={post.slug}
                 href={`/news/${post.slug}`}
                 className="group flex flex-col overflow-hidden rounded-none border border-dust/30 bg-surface-soft transition-shadow hover:shadow-md"
               >
@@ -62,8 +65,9 @@ export default async function NewsPage() {
                   </p>
                 </div>
               </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
     </>

@@ -1,6 +1,6 @@
 import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
-import { Reveal, Pop } from "@/components/ui/motion";
+import { Reveal } from "@/components/ui/motion";
 
 type Cta = { label: string; href: string; variant?: "primary" | "outline" };
 
@@ -22,14 +22,13 @@ export function CtaBand({
         <p className="text-lg leading-relaxed">{body}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           {ctas.map((c) => (
-            <Pop key={c.label}>
-              <Button
-                href={c.href}
-                variant={c.variant === "outline" ? "outline" : "primary"}
-              >
-                {c.label}
-              </Button>
-            </Pop>
+            <Button
+              key={c.label}
+              href={c.href}
+              variant={c.variant === "outline" ? "outline" : "primary"}
+            >
+              {c.label}
+            </Button>
           ))}
         </div>
       </Reveal>

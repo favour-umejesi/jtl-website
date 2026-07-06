@@ -32,6 +32,13 @@ export const home = {
     statement:
       "Every child deserves access to quality education, regardless of where they live. We make that possible through camps, scholarships, and lasting mentorship.",
   },
+  video: {
+    eyebrow: "See It In Action",
+    title: "Our 2025 Peace Camp cohort",
+    body: "These are the children who completed our 2025 Peace Camp in Kwali, ready for the next step toward school.",
+    src: "/videos/see-jtl-in-action.mp4",
+    poster: "/images/see-jtl-in-action-poster.jpg",
+  },
   programs: {
     eyebrow: "What We Do",
     title: "Our three-prong approach",
@@ -227,8 +234,8 @@ export const ourWork = {
   camps: [
     {
       name: "Peace Camp",
-      meta: "Kwali, Abuja",
-      body: "A six-week summer camp serving 20 children, combining academic enrichment, confidence-building, and mentorship.",
+      meta: "May 12 – June 24, 2025",
+      body: "A six-week summer camp in Kwali, Abuja serving 20 children, combining academic enrichment, confidence-building, and mentorship.",
     },
     {
       name: "MathLove Camp",

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { Partners } from "@/components/sections/Partners";
 import { IconArrowRight } from "@/components/ui/icons";
 import { about } from "@/lib/content";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "About" };
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default function AboutPage() {
 
       {/* Our story */}
       <Section tone="surface">
-        <div className="grid items-start gap-12 lg:grid-cols-[480px_1fr] lg:gap-16">
+        <Reveal className="grid items-start gap-12 lg:grid-cols-[480px_1fr] lg:gap-16">
           <ImagePlaceholder
             src={about.story.image}
             className="aspect-[4/5] w-full"
@@ -84,50 +85,54 @@ export default function AboutPage() {
               <IconArrowRight className="size-4" />
             </Link>
           </div>
-        </div>
+        </Reveal>
       </Section>
 
       {/* Mission & vision */}
       <Section tone="soft">
-        <div className="grid gap-6 md:grid-cols-2">
+        <Stagger className="grid gap-6 md:grid-cols-2">
           {about.missionVision.map((b) => (
-            <div key={b.eyebrow} className="space-y-4 rounded-none border border-dust/25 bg-surface p-9">
-              <Eyebrow className="text-ink-soft">{b.eyebrow}</Eyebrow>
-              <p className="font-heading text-2xl font-medium leading-snug">
-                {b.body}
-              </p>
-            </div>
+            <StaggerItem key={b.eyebrow} hoverLift>
+              <div className="space-y-4 rounded-none border border-dust/25 bg-surface p-9">
+                <Eyebrow className="text-ink-soft">{b.eyebrow}</Eyebrow>
+                <p className="font-heading text-2xl font-medium leading-snug">
+                  {b.body}
+                </p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       {/* Team */}
       <Section tone="surface">
         <div className="space-y-12">
-          <div className="space-y-3.5">
+          <Reveal className="space-y-3.5">
             <Eyebrow className="text-purple">Our Team</Eyebrow>
             <h2 className="text-3xl font-semibold md:text-4xl">
               The people behind JTL
             </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+          </Reveal>
+          <Stagger className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
             {about.team.map((member) => (
-              <div key={member.name} className="flex flex-col items-center gap-3.5 text-center">
-                <ImagePlaceholder
-                  src={member.photo}
-                  rounded="rounded-full"
-                  className="size-28"
-                  label={member.name}
-                />
-                <span>
-                  <span className="block font-heading text-lg font-semibold">
-                    {member.name}
+              <StaggerItem key={member.name} hoverLift>
+                <div className="flex flex-col items-center gap-3.5 text-center">
+                  <ImagePlaceholder
+                    src={member.photo}
+                    rounded="rounded-full"
+                    className="size-28"
+                    label={member.name}
+                  />
+                  <span>
+                    <span className="block font-heading text-lg font-semibold">
+                      {member.name}
+                    </span>
+                    <span className="block text-sm text-purple">{member.role}</span>
                   </span>
-                  <span className="block text-sm text-purple">{member.role}</span>
-                </span>
-              </div>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
 
