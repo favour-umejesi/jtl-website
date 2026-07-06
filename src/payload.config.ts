@@ -67,6 +67,10 @@ export default buildConfig({
     // so `npm run dev` keeps using the disk unless you add BLOB_READ_WRITE_TOKEN.
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      // Keep the `prefix` schema field present even when the plugin is disabled
+      // locally (no token), so dev and production share one schema and a local
+      // `npm run dev` never drops the column production relies on.
+      alwaysInsertFields: true,
       collections: { media: true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
