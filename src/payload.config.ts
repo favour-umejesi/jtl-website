@@ -71,6 +71,9 @@ export default buildConfig({
       // locally (no token), so dev and production share one schema and a local
       // `npm run dev` never drops the column production relies on.
       alwaysInsertFields: true,
+      // Upload straight from the browser to Blob, bypassing Vercel's ~4.5MB
+      // serverless request-body limit (which otherwise fails larger images).
+      clientUploads: true,
       collections: { media: true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
