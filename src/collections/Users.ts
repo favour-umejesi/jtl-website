@@ -1,14 +1,41 @@
 import type { CollectionConfig } from "payload";
 
+// Absolute site URL used in email links. Auto-resolves on Vercel (system env),
+// overridable via NEXT_PUBLIC_SERVER_URL, and falls back to localhost in dev.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const Users: CollectionConfig = {
   slug: "users",
   admin: { useAsTitle: "email" },
   // Email verification for new accounts. When an admin creates a user, Payload
-  // emails them a verification link (needs SMTP configured); admins can also
+  // emails them the branded verification link below (requires SMTP configured
+  // in production, else it only logs to the server console). Admins can also
   // flip the "_verified" toggle manually. Existing accounts must be marked
   // verified once (done via a one-off DB update) or they can't log in.
   auth: {
-    verify: true,
+    verify: {
+      generateEmailSubject: () =>
+        "Verify your email · Justice Through Literacy",
+      generateEmailHTML: ({ token, user }) => {
+        const name =
+          (user as { name?: string })?.name?.split(" ")[0] || "there";
+        const url = `${SITE_URL}/admin/users/verify/${token}`;
+        return `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:8px;color:#1a1a1a;">
+    <h1 style="color:#2c016d;font-size:22px;margin:0 0 12px;">Welcome to Justice Through Literacy</h1>
+    <p style="font-size:15px;line-height:1.6;">Hi ${name}, an account has been created for you on the JTL admin. Confirm your email address to activate it.</p>
+    <p style="text-align:center;margin:28px 0;">
+      <a href="${url}" style="background:#d7ad0d;color:#2c016d;padding:12px 26px;text-decoration:none;font-weight:bold;border-radius:4px;display:inline-block;">Verify my email</a>
+    </p>
+    <p style="font-size:13px;color:#666;line-height:1.5;">Or paste this link into your browser:<br><a href="${url}" style="color:#2c016d;">${url}</a></p>
+    <p style="font-size:12px;color:#999;margin-top:24px;">If you weren't expecting this, you can ignore this email.</p>
+  </div>`;
+      },
+    },
   },
   fields: [
     { name: "name", type: "text" },
