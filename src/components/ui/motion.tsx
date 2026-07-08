@@ -11,6 +11,12 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+// Require elements to be 80px inside the viewport vertically before they count
+// as "in view". Vertical-only on purpose: a four-sided -80px margin also shrinks
+// the viewport horizontally, so narrow elements near a screen edge (e.g. the
+// single-digit "3" stat on a phone) would never intersect and never animate.
+const VIEWPORT_MARGIN = "-80px 0px" as const;
+
 /**
  * Reusable Framer Motion (motion) primitives — client "islands" that can be
  * dropped inside server components. All effects respect prefers-reduced-motion:
@@ -35,7 +41,7 @@ export function Reveal({
       className={className}
       initial={{ opacity: 0, y: reduce ? 0 : y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: VIEWPORT_MARGIN }}
       transition={{ duration: 0.6, ease: EASE, delay }}
     >
       {children}
@@ -58,7 +64,7 @@ export function Stagger({
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: VIEWPORT_MARGIN }}
       variants={{
         show: { transition: { staggerChildren: 0.12, delayChildren: delay } },
       }}
@@ -137,7 +143,7 @@ export function CountUp({
   const match = value.match(NUMBER_RE);
   const isNumeric = match !== null;
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: VIEWPORT_MARGIN });
   const reduce = useReducedMotion();
 
   const target = match ? parseFloat(match[2]) : 0;
@@ -192,7 +198,7 @@ export function HoverZoom({
       className={className}
       initial={{ opacity: 0, scale: reduce ? 1 : 1.06 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: VIEWPORT_MARGIN }}
       transition={{ duration: 0.7, ease: EASE }}
       whileHover={reduce ? undefined : { scale: 1.03 }}
     >
