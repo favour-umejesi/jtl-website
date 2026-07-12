@@ -144,7 +144,13 @@ export async function getPosts(category?: "blog" | "news"): Promise<ListPost[]> 
       limit: 100,
       depth: 1,
       sort: "-date",
-      ...(category ? { where: { category: { equals: category } } } : {}),
+      // Drafts awaiting review must never reach the public site.
+      where: {
+        and: [
+          { _status: { equals: "published" } },
+          ...(category ? [{ category: { equals: category } }] : []),
+        ],
+      },
     });
     if (docs.length) return docs.map(mapPost);
   } catch {
@@ -160,7 +166,9 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
     const payload = await getPayload({ config });
     const { docs } = await payload.find({
       collection: "posts",
-      where: { slug: { equals: slug } },
+      where: {
+        and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }],
+      },
       depth: 1,
       limit: 1,
     });
@@ -232,6 +240,7 @@ export async function getPostSlugs(): Promise<string[]> {
       collection: "posts",
       limit: 200,
       depth: 0,
+      where: { _status: { equals: "published" } },
     });
     if (docs.length) return docs.map((d: Record<string, unknown>) => String(d.slug ?? ""));
   } catch {

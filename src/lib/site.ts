@@ -53,8 +53,7 @@ export const mainNav: NavLink[] = [
   {
     label: "News",
     href: "/news",
-    blurb: "The latest from the field, stories, camp updates, and our blog.",
-    children: [{ label: "Blog", href: "/blog" }],
+    blurb: "The latest from the field: stories, camp updates, and events.",
     featured: {
       title: "From the Peace Camp to the classroom",
       href: "/news",
@@ -89,7 +88,6 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
       { label: "Our Work", href: "/our-work" },
       { label: "Impact", href: "/impact" },
       { label: "News", href: "/news" },
-      { label: "Blog", href: "/blog" },
     ],
   },
   {

@@ -12,48 +12,41 @@ import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 export const metadata: Metadata = { title: "About" };
 export const dynamic = "force-dynamic";
 
-function TeamGrid({
-  heading,
-  members,
-}: {
-  heading?: string;
-  members: TeamMember[];
-}) {
+/** Past staff sort to the end of the grid and get "(Past Staff)" by their role. */
+function TeamGrid({ members }: { members: TeamMember[] }) {
   return (
-    <div className="space-y-8">
-      {heading && (
-        <Reveal>
-          <h3 className="font-heading text-2xl font-semibold">{heading}</h3>
-        </Reveal>
-      )}
-      <Stagger className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
-        {members.map((member) => (
-          <StaggerItem key={member.name} hoverLift>
-            <div className="flex flex-col items-center gap-3.5 text-center">
-              <ImagePlaceholder
-                src={member.photo}
-                rounded="rounded-full"
-                className="size-28"
-                label={member.name}
-              />
-              <span>
-                <span className="block font-heading text-lg font-semibold">
-                  {member.name}
-                </span>
-                <span className="block text-sm text-purple">{member.role}</span>
+    <Stagger className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+      {members.map((member) => (
+        <StaggerItem key={member.name} hoverLift>
+          <div className="flex flex-col items-center gap-3.5 text-center">
+            <ImagePlaceholder
+              src={member.photo}
+              rounded="rounded-full"
+              className="size-28"
+              label={member.name}
+            />
+            <span>
+              <span className="block font-heading text-lg font-semibold">
+                {member.name}
               </span>
-            </div>
-          </StaggerItem>
-        ))}
-      </Stagger>
-    </div>
+              <span className="block text-sm text-purple">
+                {member.role}
+                {member.status === "past" && " (Past Staff)"}
+              </span>
+            </span>
+          </div>
+        </StaggerItem>
+      ))}
+    </Stagger>
   );
 }
 
 export default async function AboutPage() {
   const team = await getTeam();
-  const currentStaff = team.filter((m) => m.status !== "past");
-  const pastStaff = team.filter((m) => m.status === "past");
+  // Stable sort: current staff first (keeping their CMS order), past staff last.
+  const sortedTeam = [...team].sort(
+    (a, b) => Number(a.status === "past") - Number(b.status === "past"),
+  );
 
   return (
     <>
@@ -156,13 +149,7 @@ export default async function AboutPage() {
               The people behind JTL
             </h2>
           </Reveal>
-          <TeamGrid
-            heading={pastStaff.length ? "Current Staff" : undefined}
-            members={currentStaff}
-          />
-          {pastStaff.length > 0 && (
-            <TeamGrid heading="Past Staff" members={pastStaff} />
-          )}
+          <TeamGrid members={sortedTeam} />
         </div>
       </Section>
 

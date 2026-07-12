@@ -11,6 +11,8 @@ import sharp from "sharp";
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
+import { Blogs } from "./collections/Blogs";
+import { Subscribers } from "./collections/Subscribers";
 import { Testimonials } from "./collections/Testimonials";
 import { Partners } from "./collections/Partners";
 import { TeamMembers } from "./collections/TeamMembers";
@@ -27,7 +29,7 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
   },
-  collections: [Users, Media, Posts, Testimonials, Partners, TeamMembers],
+  collections: [Users, Media, Posts, Blogs, Subscribers, Testimonials, Partners, TeamMembers],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

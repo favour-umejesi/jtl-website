@@ -62,5 +62,27 @@ export const Users: CollectionConfig = {
   },
   fields: [
     { name: "name", type: "text" },
+    {
+      // "Admin" reviews and publishes news/blogs (see src/lib/editorial.ts);
+      // "Staff" can create and edit drafts. Only the user managers above may
+      // change someone's title, so staff can't promote themselves.
+      name: "role",
+      label: "Title",
+      type: "select",
+      required: true,
+      defaultValue: "staff",
+      options: [
+        { label: "Admin", value: "admin" },
+        { label: "Staff", value: "staff" },
+      ],
+      access: {
+        create: ({ req }) => isUserManager(req.user?.email),
+        update: ({ req }) => isUserManager(req.user?.email),
+      },
+      admin: {
+        description:
+          "Admins review and publish news and blogs. Staff can write and edit drafts.",
+      },
+    },
   ],
 };

@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { subscribeToMailingList } from "@/lib/actions";
 
 /**
- * Mailing-list signup. UI only — phase two wires this to Mailchimp (or a
- * Payload form-builder submission). For now it shows a local confirmation.
+ * Mailing-list signup. Submits to the `subscribers` collection through a
+ * server action; everyone on that list receives new blogs by email.
  */
 export function NewsletterForm() {
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const inputClass =
     "w-full border border-dust/40 bg-surface-soft px-4 py-3 text-[15px] outline-none focus:border-purple";
@@ -29,7 +32,15 @@ export function NewsletterForm() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        setDone(true);
+        const data = new FormData(e.currentTarget);
+        const name = `${data.get("firstName") ?? ""} ${data.get("lastName") ?? ""}`.trim();
+        const email = String(data.get("email") ?? "");
+        setError(null);
+        startTransition(async () => {
+          const result = await subscribeToMailingList(name, email);
+          if (result.ok) setDone(true);
+          else setError(result.message);
+        });
       }}
       className="space-y-3.5 rounded-none bg-surface p-8"
     >
@@ -44,11 +55,13 @@ export function NewsletterForm() {
         placeholder="Email address"
         className={inputClass}
       />
+      {error && <p className="text-sm text-red-700">{error}</p>}
       <button
         type="submit"
-        className="w-full bg-purple px-4 py-3 font-semibold text-on-purple transition-opacity hover:opacity-90"
+        disabled={pending}
+        className="w-full bg-purple px-4 py-3 font-semibold text-on-purple transition-opacity hover:opacity-90 disabled:opacity-60"
       >
-        Subscribe
+        {pending ? "Subscribing…" : "Subscribe"}
       </button>
     </form>
   );

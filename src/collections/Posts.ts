@@ -1,12 +1,32 @@
 import type { CollectionConfig } from "payload";
+import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
 
 export const Posts: CollectionConfig = {
   slug: "posts",
+  // News is public on the site; blogs live in their own collection and are
+  // emailed to subscribers instead (see Blogs.ts).
+  labels: { singular: "News Article", plural: "News" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "author", "date", "category"],
+    defaultColumns: ["title", "author", "date", "_status"],
+    description:
+      "Articles shown on the public News page. Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review.",
   },
-  access: { read: () => true },
+  versions: { drafts: true },
+  // Visitors only ever see published articles; logged-in editors see drafts.
+  access: {
+    read: ({ req }) => (req.user ? true : { _status: { equals: "published" } }),
+  },
+  hooks: {
+    beforeChange: [requireAdminToPublish],
+    afterChange: [
+      notifyAdminsOnReviewRequest({
+        slug: "posts",
+        label: "news article",
+        onPublish: "Publishing it will make it visible on the website's News page.",
+      }),
+    ],
+  },
   fields: [
     { name: "title", type: "text", required: true },
     {
@@ -17,9 +37,13 @@ export const Posts: CollectionConfig = {
       admin: { description: "URL-friendly id, e.g. peace-camp-jtl-2025" },
     },
     {
+      // Legacy field from when news and blogs shared this collection. Hidden
+      // from the editor; kept so existing rows and the news-page filter keep
+      // working without a schema migration.
       name: "category",
       type: "select",
-      defaultValue: "blog",
+      defaultValue: "news",
+      admin: { hidden: true },
       options: [
         { label: "Blog", value: "blog" },
         { label: "News", value: "news" },

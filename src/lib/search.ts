@@ -72,15 +72,9 @@ export const searchIndex: SearchDoc[] = [
     excerpt: "Updates and stories from the field.",
     keywords: join(["news stories updates events", ...posts.map((p) => `${p.title} ${p.excerpt}`)]),
   },
-  {
-    title: "Blog",
-    href: "/blog",
-    excerpt: "All posts from Justice Through Literacy.",
-    keywords: join(["blog posts articles", ...posts.map((p) => p.title)]),
-  },
   ...posts.map((p) => ({
     title: p.title,
-    href: "/blog",
+    href: `/news/${p.slug}`,
     excerpt: p.excerpt,
     keywords: join([p.title, p.excerpt, p.author, p.date]),
   })),
