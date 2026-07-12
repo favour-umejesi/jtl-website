@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { Access, CollectionConfig } from "payload";
 
 // Absolute site URL used in email links. Auto-resolves on Vercel (system env),
 // overridable via NEXT_PUBLIC_SERVER_URL, and falls back to localhost in dev.
@@ -8,9 +8,32 @@ const SITE_URL =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000");
 
+// Only these accounts may add or remove admin users. Everyone else can still
+// log in and edit content — they just can't touch the Users collection beyond
+// their own profile.
+const USER_MANAGERS = ["umejesif@gmail.com", "educatenigeriankids@gmail.com"];
+
+const isUserManager = (email?: string | null) =>
+  Boolean(email && USER_MANAGERS.includes(email.toLowerCase()));
+
+const canManageUsers: Access = ({ req: { user } }) =>
+  isUserManager(user?.email);
+
 export const Users: CollectionConfig = {
   slug: "users",
   admin: { useAsTitle: "email" },
+  access: {
+    create: canManageUsers,
+    delete: canManageUsers,
+    // User managers can edit anyone; other users only their own profile
+    // (name/password), never other accounts.
+    update: ({ req: { user } }) => {
+      if (!user) return false;
+      if (isUserManager(user.email)) return true;
+      return { id: { equals: user.id } };
+    },
+    unlock: canManageUsers,
+  },
   // Email verification for new accounts. When an admin creates a user, Payload
   // emails them the branded verification link below (requires SMTP configured
   // in production, else it only logs to the server console). Admins can also

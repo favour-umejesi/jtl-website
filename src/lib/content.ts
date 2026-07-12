@@ -62,7 +62,7 @@ export const home = {
       },
       {
         title: "Sponsor to School",
-        body: "After camp graduation, we connect children with donors and partner schools to fund elementary education—the critical bridge between literacy and illiteracy.",
+        body: "After camp graduation, we connect children with donors and partner schools to fund elementary education: the critical bridge between literacy and illiteracy.",
         image: "/images/sponsor.jpg",
         link: { label: "Sponsor a child now", href: "/donate" },
       },

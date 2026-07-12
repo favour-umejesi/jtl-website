@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Dancing_Script } from "next/font/google";
+import { Fraunces, Lexend } from "next/font/google";
 import "../globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -11,16 +11,11 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+// Body font. Lexend was designed to improve reading proficiency — a deliberate
+// fit for a literacy nonprofit.
+const lexend = Lexend({
+  variable: "--font-lexend",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing",
-  subsets: ["latin"],
-  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -40,7 +35,7 @@ export default function FrontendLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${dancingScript.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${lexend.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-surface text-ink">
         <Nav />
