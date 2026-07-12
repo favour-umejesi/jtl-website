@@ -42,10 +42,10 @@ export default async function NewsPage() {
           </Reveal>
           <Stagger className="grid gap-6 md:grid-cols-3">
             {posts.slice(0, 6).map((post) => (
-              <StaggerItem key={post.slug} hoverLift>
+              <StaggerItem key={post.slug} hoverLift className="h-full">
               <Link
                 href={`/news/${post.slug}`}
-                className="group flex flex-col overflow-hidden rounded-none border border-dust/30 bg-surface-soft transition-shadow hover:shadow-md"
+                className="group flex h-full flex-col overflow-hidden rounded-none border border-dust/30 bg-surface-soft transition-shadow hover:shadow-md"
               >
                 <ImagePlaceholder
                   src={post.image}
@@ -57,10 +57,10 @@ export default async function NewsPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.05em] text-purple">
                     {post.date}
                   </p>
-                  <h3 className="font-heading text-xl font-semibold leading-tight group-hover:text-purple">
+                  <h3 className="line-clamp-2 font-heading text-xl font-semibold leading-tight group-hover:text-purple">
                     {post.title}
                   </h3>
-                  <p className="text-[15px] leading-relaxed text-ink-soft">
+                  <p className="line-clamp-3 text-[15px] leading-relaxed text-ink-soft">
                     {post.excerpt}
                   </p>
                 </div>

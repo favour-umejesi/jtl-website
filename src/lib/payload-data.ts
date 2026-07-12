@@ -27,6 +27,12 @@ function authorPhotoFor(name: string): string | undefined {
 
 export type Testimonial = { quote: string; name: string; role: string };
 export type Partner = { name: string; logo: string; url?: string };
+export type TeamMember = {
+  name: string;
+  role: string;
+  photo?: string;
+  status: "current" | "past";
+};
 export type ListPost = Post & { likes: number };
 
 function mediaUrl(value: unknown): string {
@@ -90,6 +96,29 @@ export async function getPartners(): Promise<Partner[]> {
     // fall through
   }
   return staticPartners;
+}
+
+export async function getTeam(): Promise<TeamMember[]> {
+  try {
+    const payload = await getPayload({ config });
+    const { docs } = await payload.find({
+      collection: "team-members",
+      limit: 100,
+      depth: 1,
+      sort: "order",
+    });
+    if (docs.length) {
+      return docs.map((d: Record<string, unknown>) => ({
+        name: String(d.name ?? ""),
+        role: String(d.role ?? ""),
+        photo: mediaUrl(d.photo) || undefined,
+        status: d.status === "past" ? ("past" as const) : ("current" as const),
+      }));
+    }
+  } catch {
+    // fall through
+  }
+  return about.team.map((m) => ({ ...m, status: "current" as const }));
 }
 
 function mapPost(d: Record<string, unknown>): ListPost {

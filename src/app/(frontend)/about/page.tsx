@@ -6,15 +6,74 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { Partners } from "@/components/sections/Partners";
 import { IconArrowRight } from "@/components/ui/icons";
 import { about } from "@/lib/content";
+import { getTeam, type TeamMember } from "@/lib/payload-data";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "About" };
 export const dynamic = "force-dynamic";
 
-export default function AboutPage() {
+function TeamGrid({
+  heading,
+  members,
+}: {
+  heading?: string;
+  members: TeamMember[];
+}) {
+  return (
+    <div className="space-y-8">
+      {heading && (
+        <Reveal>
+          <h3 className="font-heading text-2xl font-semibold">{heading}</h3>
+        </Reveal>
+      )}
+      <Stagger className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+        {members.map((member) => (
+          <StaggerItem key={member.name} hoverLift>
+            <div className="flex flex-col items-center gap-3.5 text-center">
+              <ImagePlaceholder
+                src={member.photo}
+                rounded="rounded-full"
+                className="size-28"
+                label={member.name}
+              />
+              <span>
+                <span className="block font-heading text-lg font-semibold">
+                  {member.name}
+                </span>
+                <span className="block text-sm text-purple">{member.role}</span>
+              </span>
+            </div>
+          </StaggerItem>
+        ))}
+      </Stagger>
+    </div>
+  );
+}
+
+export default async function AboutPage() {
+  const team = await getTeam();
+  const currentStaff = team.filter((m) => m.status !== "past");
+  const pastStaff = team.filter((m) => m.status === "past");
+
   return (
     <>
       <PageHeader {...about.header} />
+
+      {/* Mission & vision */}
+      <Section tone="soft">
+        <Stagger className="grid gap-6 md:grid-cols-2">
+          {about.missionVision.map((b) => (
+            <StaggerItem key={b.eyebrow} hoverLift>
+              <div className="space-y-4 rounded-none border border-dust/25 bg-surface p-9">
+                <Eyebrow className="text-ink-soft">{b.eyebrow}</Eyebrow>
+                <p className="font-heading text-2xl font-medium leading-snug">
+                  {b.body}
+                </p>
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </Section>
 
       {/* Our story */}
       <Section tone="surface">
@@ -88,23 +147,7 @@ export default function AboutPage() {
         </Reveal>
       </Section>
 
-      {/* Mission & vision */}
-      <Section tone="soft">
-        <Stagger className="grid gap-6 md:grid-cols-2">
-          {about.missionVision.map((b) => (
-            <StaggerItem key={b.eyebrow} hoverLift>
-              <div className="space-y-4 rounded-none border border-dust/25 bg-surface p-9">
-                <Eyebrow className="text-ink-soft">{b.eyebrow}</Eyebrow>
-                <p className="font-heading text-2xl font-medium leading-snug">
-                  {b.body}
-                </p>
-              </div>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </Section>
-
-      {/* Team */}
+      {/* Team — editable in the CMS under "Team Members" */}
       <Section tone="surface">
         <div className="space-y-12">
           <Reveal className="space-y-3.5">
@@ -113,26 +156,13 @@ export default function AboutPage() {
               The people behind JTL
             </h2>
           </Reveal>
-          <Stagger className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
-            {about.team.map((member) => (
-              <StaggerItem key={member.name} hoverLift>
-                <div className="flex flex-col items-center gap-3.5 text-center">
-                  <ImagePlaceholder
-                    src={member.photo}
-                    rounded="rounded-full"
-                    className="size-28"
-                    label={member.name}
-                  />
-                  <span>
-                    <span className="block font-heading text-lg font-semibold">
-                      {member.name}
-                    </span>
-                    <span className="block text-sm text-purple">{member.role}</span>
-                  </span>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
+          <TeamGrid
+            heading={pastStaff.length ? "Current Staff" : undefined}
+            members={currentStaff}
+          />
+          {pastStaff.length > 0 && (
+            <TeamGrid heading="Past Staff" members={pastStaff} />
+          )}
         </div>
       </Section>
 

@@ -26,12 +26,12 @@ export const Users: CollectionConfig = {
         const url = `${SITE_URL}/admin/users/verify/${token}`;
         return `
   <div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:8px;color:#1a1a1a;">
-    <h1 style="color:#2c016d;font-size:22px;margin:0 0 12px;">Welcome to Justice Through Literacy</h1>
+    <h1 style="color:#310061;font-size:22px;margin:0 0 12px;">Welcome to Justice Through Literacy</h1>
     <p style="font-size:15px;line-height:1.6;">Hi ${name}, an account has been created for you on the JTL admin. Confirm your email address to activate it.</p>
     <p style="text-align:center;margin:28px 0;">
-      <a href="${url}" style="background:#d7ad0d;color:#2c016d;padding:12px 26px;text-decoration:none;font-weight:bold;border-radius:4px;display:inline-block;">Verify my email</a>
+      <a href="${url}" style="background:#d7ad0d;color:#310061;padding:12px 26px;text-decoration:none;font-weight:bold;border-radius:4px;display:inline-block;">Verify my email</a>
     </p>
-    <p style="font-size:13px;color:#666;line-height:1.5;">Or paste this link into your browser:<br><a href="${url}" style="color:#2c016d;">${url}</a></p>
+    <p style="font-size:13px;color:#666;line-height:1.5;">Or paste this link into your browser:<br><a href="${url}" style="color:#310061;">${url}</a></p>
     <p style="font-size:12px;color:#999;margin-top:24px;">If you weren't expecting this, you can ignore this email.</p>
   </div>`;
       },

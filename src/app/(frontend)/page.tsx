@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { Section, Eyebrow } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
+import { IconArrowRight } from "@/components/ui/icons";
 import { OutlineFrame } from "@/components/ui/OutlineFrame";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { Testimonials } from "@/components/sections/Testimonials";
@@ -107,6 +109,15 @@ export default async function HomePage() {
                     <p className="text-[15px] leading-relaxed text-ink-soft">
                       {card.body}
                     </p>
+                    {card.link && (
+                      <Link
+                        href={card.link.href}
+                        className="mt-auto inline-flex items-center gap-2 text-[15px] font-semibold text-purple underline underline-offset-4"
+                      >
+                        {card.link.label}
+                        <IconArrowRight className="size-4" />
+                      </Link>
+                    )}
                   </article>
                 </OutlineFrame>
               </StaggerItem>

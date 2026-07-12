@@ -7,6 +7,14 @@
  * their own collections. Components reading this content stay unchanged.
  */
 
+export type ProgramCard = {
+  title: string;
+  body: string;
+  image: string;
+  /** Optional call-to-action rendered at the bottom of the card. */
+  link?: { label: string; href: string };
+};
+
 export const home = {
   hero: {
     eyebrow: "Bridging the Nigerian Literacy Gap",
@@ -25,12 +33,12 @@ export const home = {
     unit: "children out of school in Nigeria",
     statement:
       "Not because they lack ability or curiosity, but because opportunity has been kept out of reach.",
-    hope: "In Kwali and across rural Nigeria, families want their children in school. We help make that possible.",
+    hope: "Across rural Nigeria, many children never sit within the walls of a classroom. We are changing that!",
   },
   mission: {
     eyebrow: "Who We Are",
     statement:
-      "Every child deserves access to quality education, regardless of where they live. We make that possible through camps, scholarships, and lasting mentorship.",
+      "Every child deserves access to quality education, regardless of where they live. At JTL, we make that possible through camps, scholarships, and mentorship.",
   },
   video: {
     eyebrow: "See It In Action",
@@ -38,6 +46,10 @@ export const home = {
     body: "These are the children who completed our 2025 Peace Camp in Kwali, ready for the next step toward school.",
     src: "/videos/see-jtl-in-action.mp4",
     poster: "/images/see-jtl-in-action-poster.jpg",
+    link: {
+      label: "Learn more about the Peace Camp",
+      href: "/news/peace-camp-jtl-2025",
+    },
   },
   programs: {
     eyebrow: "What We Do",
@@ -52,16 +64,17 @@ export const home = {
         title: "Sponsor to School",
         body: "After camp graduation, we connect children with donors and partner schools to fund elementary education—the critical bridge between literacy and illiteracy.",
         image: "/images/sponsor.jpg",
+        link: { label: "Sponsor a child now", href: "/donate" },
       },
       {
         title: "Support in School",
-        body: "Dedicated mentors and cohort reunions keep us connected through elementary school, and donors stay updated on each sponsored child's progress.",
+        body: "Dedicated mentors keep us connected through elementary school, and donors stay updated on each sponsored child's progress.",
         image: "/images/support-in-school.jpg",
       },
-    ],
+    ] as ProgramCard[],
   },
   impactStats: [
-    { value: "$11K+", label: "raised for children's education" },
+    { value: "8", label: "volunteers engaged" },
     { value: "20+", label: "children sponsored to school" },
     { value: "3", label: "partner organizations" },
     { value: "50%", label: "basic literacy achieved" },
@@ -117,7 +130,7 @@ export const about = {
     image: "/images/about-story.jpg",
     paragraphs: [
       "In 2021, Olohi John was teaching free after-school lessons to children in Kwali. They showed up curious and capable. But when each lesson ended, most had no way to keep going, their families couldn't afford school fees, and some had grown up hearing that classrooms weren't meant for children like them. Olohi started Justice Through Literacy, first known as the Kwali Juvenile Education Foundation, so those children wouldn't have to stop.",
-      "We teach math, English, and programming to children in rural communities, where more than 10 million Nigerian children are out of school (UNICEF). And we stay with them, through a first summer camp, a sponsored place at school, and the mentors who keep them going year after year.",
+      "Through a 3-pronged process, we provide opportunities for children in rural Nigeria, where more than 10 million children are out of school (UNICEF), to attend school. And we stay with them, through a first summer camp, a sponsored place at school, and the mentors who keep them going year after year.",
     ],
     founderQuote: {
       quote:
@@ -215,7 +228,7 @@ export const ourWork = {
     {
       num: "01",
       title: "Mindset Shift + Tutorial Camps",
-      body: "As a first step, JTL scholars attend an introductory camp where they're exposed to math, English, and programming. Parents are engaged to shift attitudes toward education. Our first summer camp, The Peace Camp, was held in Kwali and culminated with 14 children awarded scholarships.",
+      body: "As a first step, JTL scholars attend a summer camp, at no cost, where they're introduced to fundamentals in math, English, and/or programming as a way to prepare them to transition to a formal school setting. During this time, the children's parents are simultaneously engaged in the process to shift attitudes toward education. Our first summer camp, The Peace Camp, was held in Kwali in the summer of 2025 and culminated with 14 children awarded scholarships.",
       image: "/images/programming.jpg",
     },
     {
@@ -227,7 +240,7 @@ export const ourWork = {
     {
       num: "03",
       title: "Support in School",
-      body: "The journey doesn't end when a child enters school. Through dedicated mentors and cohort reunions, we stay connected throughout elementary school. When a child is fully sponsored by a donor, we keep the donor updated on their progress.",
+      body: "The journey doesn't end when a child enters school. Through dedicated mentors, we stay connected throughout elementary school. When a child is fully sponsored by a donor, we keep the donor updated on their progress.",
       image: "/images/support.jpg",
     },
   ],
@@ -250,7 +263,7 @@ export const impact = {
     eyebrow: "Our Impact",
     title: "What we've accomplished so far",
     intro:
-      "14 children sponsored to school. $11K+ raised. Parents, teachers, and donors making it happen in Kwali.",
+      "14 children sponsored to school. 8 volunteers engaged. Parents, teachers, and donors making it happen in Kwali.",
     image: "/images/impact-header.jpg",
   },
   stats: home.impactStats,

@@ -47,12 +47,12 @@ export default async function BlogPage() {
                   <IconEllipsis className="size-5 text-ink-soft" />
                 </div>
 
-                <h2 className="font-heading text-2xl font-semibold leading-tight text-purple">
+                <h2 className="line-clamp-2 font-heading text-2xl font-semibold leading-tight text-purple sm:min-h-[2lh]">
                   <Link href={`/blog/${post.slug}`} className="hover:underline">
                     {post.title}
                   </Link>
                 </h2>
-                <p className="text-[15px] leading-relaxed text-ink-soft">
+                <p className="line-clamp-2 text-[15px] leading-relaxed text-ink-soft sm:min-h-[2lh]">
                   {post.excerpt}
                 </p>
               </div>

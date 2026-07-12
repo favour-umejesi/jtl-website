@@ -13,6 +13,7 @@ import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
 import { Testimonials } from "./collections/Testimonials";
 import { Partners } from "./collections/Partners";
+import { TeamMembers } from "./collections/TeamMembers";
 import { Settings } from "./globals/Settings";
 
 const filename = fileURLToPath(import.meta.url);
@@ -26,7 +27,7 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
   },
-  collections: [Users, Media, Posts, Testimonials, Partners],
+  collections: [Users, Media, Posts, Testimonials, Partners, TeamMembers],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

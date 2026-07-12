@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { OutlineFrame } from "@/components/ui/OutlineFrame";
 import { Eyebrow } from "@/components/ui/Section";
+import { IconArrowRight } from "@/components/ui/icons";
 
 type VideoContent = {
   eyebrow: string;
@@ -9,6 +11,7 @@ type VideoContent = {
   body: string;
   src: string;
   poster: string;
+  link?: { label: string; href: string };
 };
 
 /**
@@ -26,6 +29,15 @@ export function VideoShowcase({ video }: { video: VideoContent }) {
         <Eyebrow className="text-yellow">{video.eyebrow}</Eyebrow>
         <h2 className="text-3xl font-semibold md:text-4xl">{video.title}</h2>
         <p className="text-lg leading-relaxed text-dust">{video.body}</p>
+        {video.link && (
+          <Link
+            href={video.link.href}
+            className="inline-flex items-center gap-2 font-semibold text-yellow underline underline-offset-4"
+          >
+            {video.link.label}
+            <IconArrowRight className="size-4" />
+          </Link>
+        )}
       </div>
 
       <OutlineFrame color="yellow" className="w-full">
