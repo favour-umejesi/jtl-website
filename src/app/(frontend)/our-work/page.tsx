@@ -57,7 +57,7 @@ export default function OurWorkPage() {
             {ourWork.camps.map((camp) => (
               <StaggerItem key={camp.name} hoverLift className="h-full">
                 <article
-                  className="space-y-3.5 rounded-none border border-dust/25 bg-surface p-8"
+                  className="h-full space-y-3.5 rounded-none border border-dust/25 bg-surface p-8"
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.1em] text-yellow">
                     {camp.meta}

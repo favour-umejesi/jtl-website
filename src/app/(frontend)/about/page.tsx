@@ -63,8 +63,8 @@ export default async function AboutPage() {
       <Section tone="soft">
         <Stagger className="grid gap-6 md:grid-cols-2">
           {about.missionVision.map((b) => (
-            <StaggerItem key={b.eyebrow} hoverLift>
-              <div className="space-y-4 rounded-none border border-dust/25 bg-surface p-9">
+            <StaggerItem key={b.eyebrow} hoverLift className="h-full">
+              <div className="h-full space-y-4 rounded-none border border-dust/25 bg-surface p-9">
                 <Eyebrow className="text-ink-soft">{b.eyebrow}</Eyebrow>
                 <p className="font-heading text-2xl font-medium leading-snug">
                   {b.body}
