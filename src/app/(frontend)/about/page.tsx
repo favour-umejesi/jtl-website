@@ -88,8 +88,8 @@ export default async function AboutPage() {
             ))}
 
             <figure className="space-y-5">
-              <blockquote className="border-l-4 border-yellow pl-5 font-heading text-xl font-medium italic leading-snug md:text-2xl">
-                {about.story.founderQuote.quote}
+              <blockquote className="font-heading text-lg font-semibold italic leading-snug md:text-[22px]">
+                “{about.story.founderQuote.quote}”
               </blockquote>
               <figcaption className="flex items-center gap-3.5">
                 <ImagePlaceholder
