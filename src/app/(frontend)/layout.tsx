@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import { Fraunces, Lexend } from "next/font/google";
+import { Lexend, Yeseva_One } from "next/font/google";
 import "../globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { org } from "@/lib/site";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Heading font. Yeseva One ships a single 400 weight, hence the fixed weight
+// (and the font-synthesis rule in globals.css that stops faux-bolding).
+const yeseva = Yeseva_One({
+  variable: "--font-yeseva",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -35,7 +38,7 @@ export default function FrontendLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${lexend.variable} h-full antialiased`}
+      className={`${yeseva.variable} ${lexend.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-surface text-ink">
         <Nav />
