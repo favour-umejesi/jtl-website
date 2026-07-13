@@ -1,1 +1,1 @@
-Justice Through Literacy (Formerlly known as Educate Kwali Kids)
+Justice Through Literacy (Formerly known as Educate Kwali Kids)

@@ -10,12 +10,15 @@ import { Partners } from "@/components/sections/Partners";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Reveal, Stagger, StaggerItem, CountUp } from "@/components/ui/motion";
 import { home } from "@/lib/content";
-import { getTestimonials } from "@/lib/payload-data";
+import { getSettings, getTestimonials } from "@/lib/payload-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const testimonials = await getTestimonials();
+  const [testimonials, settings] = await Promise.all([
+    getTestimonials(),
+    getSettings(),
+  ]);
   return (
     <>
       {/* Hero */}
@@ -133,7 +136,7 @@ export default async function HomePage() {
             <h2 className="text-3xl font-semibold md:text-4xl">Our impact so far</h2>
           </Reveal>
           <Stagger className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {home.impactStats.map((stat) => (
+            {settings.impactStats.map((stat) => (
               <StaggerItem key={stat.label} className="space-y-2">
                 <p className="font-heading text-5xl font-semibold text-yellow">
                   <CountUp value={stat.value} />

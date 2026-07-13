@@ -4,11 +4,13 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { IconQuote } from "@/components/ui/icons";
 import { impact } from "@/lib/content";
+import { getSettings } from "@/lib/payload-data";
 import { Reveal, Stagger, StaggerItem, CountUp } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "Impact" };
 
-export default function ImpactPage() {
+export default async function ImpactPage() {
+  const settings = await getSettings();
   return (
     <>
       <PageHeader {...impact.header} />
@@ -16,7 +18,7 @@ export default function ImpactPage() {
       {/* Stats */}
       <Section tone="surface">
         <Stagger className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {impact.stats.map((stat) => (
+          {settings.impactStats.map((stat) => (
             <StaggerItem key={stat.label} className="space-y-2.5">
               <p className="font-heading text-5xl font-semibold text-purple md:text-6xl">
                 <CountUp value={stat.value} />

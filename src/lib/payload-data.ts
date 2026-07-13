@@ -13,6 +13,7 @@ import {
   partners as staticPartners,
   posts as staticPosts,
   about,
+  home,
   type Post,
 } from "./content";
 import { org } from "./site";
@@ -193,6 +194,8 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
   return fallback ? { ...fallback, likes: 0 } : null;
 }
 
+export type ImpactStat = { value: string; label: string };
+
 export type SiteSettings = {
   name: string;
   tagline: string;
@@ -202,7 +205,23 @@ export type SiteSettings = {
   location: string;
   donateUrl: string;
   socials: { facebook: string; instagram: string; linkedin: string };
+  /** "Our impact so far" metrics on the Home and Impact pages. */
+  impactStats: ImpactStat[];
 };
+
+const staticImpactStats = (): ImpactStat[] =>
+  home.impactStats.map((s) => ({ ...s }));
+
+function mapImpactStats(value: unknown): ImpactStat[] {
+  const rows = Array.isArray(value) ? value : [];
+  const stats = rows
+    .map((r: Record<string, unknown>) => ({
+      value: String(r?.value ?? "").trim(),
+      label: String(r?.label ?? "").trim(),
+    }))
+    .filter((s) => s.value && s.label);
+  return stats.length ? stats : staticImpactStats();
+}
 
 export const getSettings = unstable_cache(
   async (): Promise<SiteSettings> => {
@@ -225,6 +244,7 @@ export const getSettings = unstable_cache(
           instagram: pick(socials.instagram, org.socials.instagram),
           linkedin: pick(socials.linkedin, org.socials.linkedin),
         },
+        impactStats: mapImpactStats(s.impactStats),
       };
     } catch {
       return {
@@ -236,6 +256,7 @@ export const getSettings = unstable_cache(
         location: org.location,
         donateUrl: org.donateUrl,
         socials: { ...org.socials },
+        impactStats: staticImpactStats(),
       };
     }
   },
