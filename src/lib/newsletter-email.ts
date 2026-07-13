@@ -22,7 +22,16 @@ export type NewsletterEmailArgs = {
   heroImageUrl?: string;
   /** Trusted HTML rendered from the rich-text content — not escaped here */
   contentHtml?: string;
+  /** Per-recipient unsubscribe link (see src/lib/unsubscribe.ts) */
+  unsubscribeUrl?: string;
 };
+
+/** Footer line with the one-click unsubscribe link. */
+function unsubscribeFooterHtml(unsubscribeUrl?: string): string {
+  // Admin previews have no specific recipient; "#" keeps the layout honest.
+  const href = unsubscribeUrl || "#";
+  return `Don&#39;t want these emails? <a href="${href}" style="color:${BRAND.muted};text-decoration:underline;">Unsubscribe</a> &mdash; one click and you&#39;re off the list.`;
+}
 
 /**
  * Editable copy for the subscribe-confirmation email. These are the
@@ -49,10 +58,13 @@ export function renderSubscribeConfirmationEmail({
   name,
   heading,
   body,
+  unsubscribeUrl,
 }: {
   name?: string;
   heading?: string;
   body?: string;
+  /** Per-recipient unsubscribe link (see src/lib/unsubscribe.ts) */
+  unsubscribeUrl?: string;
 } = {}): string {
   const first = name?.trim() ? escapeHtml(name.trim().split(" ")[0]) : "there";
   const headingText =
@@ -87,7 +99,7 @@ export function renderSubscribeConfirmationEmail({
       <div style="border-top:1px solid ${BRAND.purple};border-bottom:3px solid ${BRAND.purple};height:3px;margin:0 0 14px;"></div>
       <p style="font-family:${BRAND.mono};font-size:12px;line-height:1.7;text-align:center;color:${BRAND.muted};margin:0;">
         Justice Through Literacy &mdash; literacy is not a privilege, it&#39;s a right.<br>
-        Didn&#39;t sign up, or changed your mind? Reply to this email with &quot;unsubscribe&quot;.
+        ${unsubscribeFooterHtml(unsubscribeUrl)}
       </p>
     </div>
   </div>`;
@@ -199,6 +211,7 @@ export function renderNewsletterEmail(args: NewsletterEmailArgs): string {
     excerpt,
     heroImageUrl,
     contentHtml,
+    unsubscribeUrl,
   } = args;
 
   const meta = [dateText, readTime].filter(Boolean).join(" · ");
@@ -259,7 +272,7 @@ export function renderNewsletterEmail(args: NewsletterEmailArgs): string {
       <p style="font-family:${BRAND.mono};font-size:12px;line-height:1.7;text-align:center;color:${BRAND.muted};margin:0;">
         Justice Through Literacy &mdash; literacy is not a privilege, it&#39;s a right.<br>
         You&#39;re receiving this because you subscribed to updates from JTL.<br>
-        To unsubscribe, reply to this email with &quot;unsubscribe&quot;.
+        ${unsubscribeFooterHtml(unsubscribeUrl)}
       </p>
     </div>
   </div>`;

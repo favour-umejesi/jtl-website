@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
+import { SITE_URL } from "@/lib/site-url";
 
 export const Posts: CollectionConfig = {
   slug: "posts",
@@ -10,7 +11,19 @@ export const Posts: CollectionConfig = {
     useAsTitle: "title",
     defaultColumns: ["title", "writer", "date", "_status"],
     description:
-      "Articles shown on the public News page. Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review.",
+      "Articles shown on the public News page. Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review. Use the Preview button to see the article as it will appear on the website.",
+    // "Preview" button in the edit view: shows the article with the real
+    // website UI, rendered from the latest saved draft.
+    preview: (doc) => (doc?.id ? `${SITE_URL}/news-preview/${doc.id}` : null),
+    components: {
+      edit: {
+        // The default preview button is icon-only; this one says "Preview".
+        PreviewButton: {
+          path: "/components/admin/PreviewLinkButton#PreviewLinkButton",
+          clientProps: { basePath: "/news-preview" },
+        },
+      },
+    },
   },
   versions: { drafts: true },
   // Visitors only ever see published articles; logged-in editors see drafts.

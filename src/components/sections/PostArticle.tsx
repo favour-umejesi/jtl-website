@@ -16,7 +16,7 @@ export function PostArticle({
   backHref: string;
   backLabel: string;
 }) {
-  const meta = [post.author, post.date, post.readTime].filter(Boolean).join("  ·  ");
+  const meta = [post.date, post.readTime].filter(Boolean).join("  ·  ");
   const hasBody =
     !!post.content && typeof post.content === "object" && "root" in post.content;
 
@@ -34,7 +34,24 @@ export function PostArticle({
           <h1 className="max-w-3xl text-4xl font-semibold leading-[1.1] md:text-5xl">
             {post.title}
           </h1>
-          {meta && <Eyebrow className="text-dust">{meta}</Eyebrow>}
+          {(post.author || meta) && (
+            <div className="flex items-center gap-3">
+              {post.authorPhoto && (
+                <ImagePlaceholder
+                  src={post.authorPhoto}
+                  rounded="rounded-full"
+                  className="size-12 shrink-0"
+                  label={post.author}
+                />
+              )}
+              <div>
+                {post.author && (
+                  <p className="font-semibold text-yellow">{post.author}</p>
+                )}
+                {meta && <Eyebrow className="text-dust">{meta}</Eyebrow>}
+              </div>
+            </div>
+          )}
         </Reveal>
       </Section>
 

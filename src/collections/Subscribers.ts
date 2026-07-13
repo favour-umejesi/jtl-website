@@ -3,6 +3,7 @@ import {
   renderSubscribeConfirmationEmail,
   SUBSCRIBE_EMAIL_DEFAULTS,
 } from "@/lib/newsletter-email";
+import { unsubscribeUrl } from "@/lib/unsubscribe";
 
 /**
  * Mailing-list subscribers. New blogs are emailed to everyone in this list
@@ -33,6 +34,7 @@ export const Subscribers: CollectionConfig = {
           const copy = await payload
             .findGlobal({ slug: "subscribe-email" })
             .catch(() => null);
+          const unsub = unsubscribeUrl(doc.id, String(doc.email));
           await payload.sendEmail({
             to: doc.email,
             subject:
@@ -43,7 +45,12 @@ export const Subscribers: CollectionConfig = {
               heading:
                 typeof copy?.heading === "string" ? copy.heading : undefined,
               body: typeof copy?.body === "string" ? copy.body : undefined,
+              unsubscribeUrl: unsub,
             }),
+            headers: {
+              "List-Unsubscribe": `<${unsub}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            },
           });
         } catch (err) {
           payload.logger.error(

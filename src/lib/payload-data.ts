@@ -194,6 +194,30 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
   return fallback ? { ...fallback, likes: 0 } : null;
 }
 
+/**
+ * A post by id including its latest draft — for the admin Preview button
+ * only (see src/app/(frontend)/news-preview). Never call this from public
+ * pages: it bypasses the published-only filter.
+ */
+export async function getPostPreviewById(
+  id: string,
+): Promise<PostDetail | null> {
+  try {
+    const payload = await getPayload({ config });
+    const d = (await payload.findByID({
+      collection: "posts",
+      id,
+      draft: true,
+      // depth 2 so writer (team member) arrives with its photo populated
+      depth: 2,
+    })) as Record<string, unknown> | null;
+    if (!d) return null;
+    return { ...mapPost(d), content: d.content };
+  } catch {
+    return null;
+  }
+}
+
 export type ImpactStat = { value: string; label: string };
 
 export type SiteSettings = {

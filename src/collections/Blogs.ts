@@ -2,9 +2,10 @@ import type { CollectionConfig } from "payload";
 import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
 import { buildNewsletterArgs, renderNewsletterEmail } from "@/lib/newsletter-email";
 import { SITE_URL } from "@/lib/site-url";
+import { unsubscribeUrl } from "@/lib/unsubscribe";
 
-/** Gmail caps recipients per message; send BCC batches well under the limit. */
-const BCC_BATCH = 80;
+/** How many individual emails to hand to SMTP at once. */
+const SEND_CONCURRENCY = 8;
 
 /**
  * Blogs are email newsletters, not web pages: they never appear on the
@@ -131,7 +132,7 @@ export const Blogs: CollectionConfig = {
 
         const { payload } = req;
         try {
-          let emails: string[] = [];
+          let recipients: { id: number | string; email: string }[] = [];
           if (doc.sendTo === "selected") {
             const ids = (doc.selectedSubscribers ?? []).map(
               (s: { id?: number | string } | number | string) =>
@@ -144,7 +145,9 @@ export const Blogs: CollectionConfig = {
                 limit: 1000,
                 depth: 0,
               });
-              emails = docs.map((s) => String(s.email ?? "").trim()).filter(Boolean);
+              recipients = docs
+                .map((s) => ({ id: s.id, email: String(s.email ?? "").trim() }))
+                .filter((s) => s.email);
             }
           } else {
             const { docs } = await payload.find({
@@ -152,26 +155,51 @@ export const Blogs: CollectionConfig = {
               limit: 1000,
               depth: 0,
             });
-            emails = docs.map((s) => String(s.email ?? "").trim()).filter(Boolean);
+            recipients = docs
+              .map((s) => ({ id: s.id, email: String(s.email ?? "").trim() }))
+              .filter((s) => s.email);
           }
-          if (!emails.length) {
+          if (!recipients.length) {
             payload.logger.warn(`blogs: "${doc.title}" published but no recipients matched`);
             return;
           }
 
-          const html = renderNewsletterEmail(
-            await buildNewsletterArgs(doc, payload),
-          );
-
-          for (let i = 0; i < emails.length; i += BCC_BATCH) {
-            await payload.sendEmail({
-              to: process.env.EMAIL_FROM || process.env.SMTP_USER,
-              bcc: emails.slice(i, i + BCC_BATCH),
-              subject: doc.title,
-              html,
-            });
+          // One email per subscriber (not BCC) so each footer carries that
+          // person's own unsubscribe link and one-click headers.
+          const args = await buildNewsletterArgs(doc, payload);
+          let failed = 0;
+          for (let i = 0; i < recipients.length; i += SEND_CONCURRENCY) {
+            await Promise.all(
+              recipients.slice(i, i + SEND_CONCURRENCY).map(async (sub) => {
+                const unsub = unsubscribeUrl(sub.id, sub.email);
+                try {
+                  await payload.sendEmail({
+                    to: sub.email,
+                    subject: doc.title,
+                    html: renderNewsletterEmail({ ...args, unsubscribeUrl: unsub }),
+                    headers: {
+                      "List-Unsubscribe": `<${unsub}>`,
+                      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                    },
+                  });
+                } catch (err) {
+                  failed += 1;
+                  payload.logger.error(
+                    { err },
+                    `blogs: failed to email "${doc.title}" to ${sub.email}`,
+                  );
+                }
+              }),
+            );
           }
-          payload.logger.info(`blogs: "${doc.title}" emailed to ${emails.length} subscribers`);
+          if (failed > 0) {
+            // sentAt stays empty so publishing again retries the whole list.
+            payload.logger.error(
+              `blogs: "${doc.title}" failed for ${failed}/${recipients.length} subscribers — publish again to retry`,
+            );
+            return;
+          }
+          payload.logger.info(`blogs: "${doc.title}" emailed to ${recipients.length} subscribers`);
 
           await payload.update({
             collection: "blogs",
