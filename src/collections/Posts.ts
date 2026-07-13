@@ -8,7 +8,7 @@ export const Posts: CollectionConfig = {
   labels: { singular: "News Article", plural: "News" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "author", "date", "_status"],
+    defaultColumns: ["title", "writer", "date", "_status"],
     description:
       "Articles shown on the public News page. Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review.",
   },
@@ -49,7 +49,26 @@ export const Posts: CollectionConfig = {
         { label: "News", value: "news" },
       ],
     },
-    { name: "author", type: "text" },
+    {
+      // Dropdown of team members. Supplies both the byline name and the
+      // author photo shown on the article page.
+      name: "writer",
+      label: "Author",
+      type: "relationship",
+      relationTo: "team-members",
+      admin: {
+        description:
+          "Pick the author from the team members list (managed under Team Members).",
+      },
+    },
+    {
+      // Legacy free-text author from before the dropdown. Hidden from the
+      // editor and the list-view column/filter pickers; kept so existing rows
+      // keep their byline until a writer is set.
+      name: "author",
+      type: "text",
+      admin: { hidden: true, disableListColumn: true, disableListFilter: true },
+    },
     { name: "date", type: "date" },
     { name: "readTime", type: "text", admin: { description: 'e.g. "3 min read"' } },
     { name: "excerpt", type: "textarea", admin: { description: "Lead paragraph shown above the hero image on the article page. The full write-up goes in Content below the image." } },

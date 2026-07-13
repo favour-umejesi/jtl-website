@@ -122,12 +122,20 @@ export async function getTeam(): Promise<TeamMember[]> {
 }
 
 function mapPost(d: Record<string, unknown>): ListPost {
-  const author = String(d.author ?? "");
+  // Prefer the team-member picked in the "Author" dropdown (populated at
+  // depth 2: writer -> photo); fall back to the legacy free-text author and
+  // the static team-photo match for rows created before the dropdown.
+  const writer =
+    d.writer && typeof d.writer === "object"
+      ? (d.writer as { name?: unknown; photo?: unknown })
+      : null;
+  const author = String(writer?.name ?? d.author ?? "");
   return {
     slug: String(d.slug ?? ""),
     title: String(d.title ?? ""),
     author,
-    authorPhoto: authorPhotoFor(author),
+    authorPhoto:
+      (writer ? mediaUrl(writer.photo) : "") || authorPhotoFor(author),
     date: fmtDate(d.date),
     readTime: String(d.readTime ?? ""),
     excerpt: String(d.excerpt ?? ""),
@@ -142,7 +150,8 @@ export async function getPosts(category?: "blog" | "news"): Promise<ListPost[]> 
     const { docs } = await payload.find({
       collection: "posts",
       limit: 100,
-      depth: 1,
+      // depth 2 so writer (team member) arrives with its photo populated
+      depth: 2,
       sort: "-date",
       // Drafts awaiting review must never reach the public site.
       where: {
@@ -169,7 +178,8 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
       where: {
         and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }],
       },
-      depth: 1,
+      // depth 2 so writer (team member) arrives with its photo populated
+      depth: 2,
       limit: 1,
     });
     if (docs.length) {

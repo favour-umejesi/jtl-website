@@ -1,10 +1,7 @@
 import type { CollectionConfig } from "payload";
-import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
+import { buildNewsletterArgs, renderNewsletterEmail } from "@/lib/newsletter-email";
 import { SITE_URL } from "@/lib/site-url";
-
-const absolute = (url: string) =>
-  url.startsWith("/") ? `${SITE_URL}${url}` : url;
 
 /** Gmail caps recipients per message; send BCC batches well under the limit. */
 const BCC_BATCH = 80;
@@ -22,14 +19,44 @@ export const Blogs: CollectionConfig = {
   labels: { singular: "Blog", plural: "Blogs" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "author", "date", "_status", "sentAt"],
+    defaultColumns: ["title", "writer", "date", "_status", "sentAt"],
     description:
-      "Blogs are emailed to subscribers — they do not appear on the website. Staff drafts are emailed only after an Admin reviews and publishes them. Untick “Send to subscribers” to publish without emailing anyone.",
+      "Blogs are emailed to subscribers — they do not appear on the website. Staff drafts are emailed only after an Admin reviews and publishes them. Untick “Send to subscribers” to publish without emailing anyone. Use the Preview button to see the email before it goes out.",
+    // "Preview" button in the edit view: opens the newsletter exactly as it
+    // would be emailed, rendered from the latest saved draft. Available to
+    // every signed-in user — Staff preview their drafts too.
+    preview: (doc) =>
+      doc?.id ? `${SITE_URL}/newsletter-preview/${doc.id}` : null,
+    components: {
+      edit: {
+        // The default preview button is icon-only; this one says "Preview".
+        PreviewButton: "/components/admin/PreviewLinkButton#PreviewLinkButton",
+      },
+    },
   },
   versions: { drafts: true },
   fields: [
     { name: "title", type: "text", required: true },
-    { name: "author", type: "text" },
+    {
+      // Dropdown of team members. Supplies both the byline name and the
+      // author photo shown in the newsletter email.
+      name: "writer",
+      label: "Author",
+      type: "relationship",
+      relationTo: "team-members",
+      admin: {
+        description:
+          "Pick the author from the team members list (managed under Team Members).",
+      },
+    },
+    {
+      // Legacy free-text author from before the dropdown. Hidden from the
+      // editor and the list-view column/filter pickers; kept so existing rows
+      // keep their byline until a writer is set.
+      name: "author",
+      type: "text",
+      admin: { hidden: true, disableListColumn: true, disableListFilter: true },
+    },
     { name: "date", type: "date" },
     { name: "readTime", type: "text", admin: { description: 'e.g. "3 min read"' } },
     {
@@ -132,39 +159,9 @@ export const Blogs: CollectionConfig = {
             return;
           }
 
-          let contentHtml = "";
-          try {
-            if (doc.content) contentHtml = convertLexicalToHTML({ data: doc.content });
-          } catch (err) {
-            payload.logger.error({ err }, "blogs: rich text -> HTML failed, sending excerpt only");
-          }
-
-          let imageHtml = "";
-          if (doc.image) {
-            const id = typeof doc.image === "object" ? doc.image.id : doc.image;
-            const media = await payload.findByID({ collection: "media", id, depth: 0 });
-            if (media?.url) {
-              imageHtml = `<img src="${absolute(String(media.url))}" alt="${doc.title}" style="width:100%;border-radius:6px;margin:16px 0;" />`;
-            }
-          }
-
-          const dateLine = [doc.author, doc.date && new Date(doc.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), doc.readTime]
-            .filter(Boolean)
-            .join(" · ");
-
-          const html = `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:8px;color:#1a1a1a;">
-    <p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#d7ad0d;font-weight:bold;margin:0 0 8px;">Justice Through Literacy</p>
-    <h1 style="color:#310061;font-size:24px;margin:0 0 6px;">${doc.title}</h1>
-    ${dateLine ? `<p style="font-size:13px;color:#666;margin:0 0 12px;">${dateLine}</p>` : ""}
-    ${doc.excerpt ? `<p style="font-size:15px;line-height:1.6;font-style:italic;color:#444;">${doc.excerpt}</p>` : ""}
-    ${imageHtml}
-    <div style="font-size:15px;line-height:1.7;">${contentHtml}</div>
-    <p style="text-align:center;margin:28px 0;">
-      <a href="${SITE_URL}" style="background:#d7ad0d;color:#310061;padding:12px 26px;text-decoration:none;font-weight:bold;border-radius:4px;display:inline-block;">Visit our website</a>
-    </p>
-    <p style="font-size:12px;color:#999;line-height:1.5;margin-top:24px;">You're receiving this because you subscribed to updates from Justice Through Literacy.<br>To unsubscribe, reply to this email with "unsubscribe".</p>
-  </div>`;
+          const html = renderNewsletterEmail(
+            await buildNewsletterArgs(doc, payload),
+          );
 
           for (let i = 0; i < emails.length; i += BCC_BATCH) {
             await payload.sendEmail({

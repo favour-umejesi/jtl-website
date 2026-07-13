@@ -17,6 +17,7 @@ import { Testimonials } from "./collections/Testimonials";
 import { Partners } from "./collections/Partners";
 import { TeamMembers } from "./collections/TeamMembers";
 import { Settings } from "./globals/Settings";
+import { SubscribeEmail } from "./globals/SubscribeEmail";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -30,7 +31,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
   },
   collections: [Users, Media, Posts, Blogs, Subscribers, Testimonials, Partners, TeamMembers],
-  globals: [Settings],
+  globals: [Settings, SubscribeEmail],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   // Sends admin emails (password resets, invites) via Gmail SMTP when

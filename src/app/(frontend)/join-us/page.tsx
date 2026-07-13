@@ -47,7 +47,7 @@ export default function JoinUsPage() {
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {joinUs.roles.map((role) => (
               <StaggerItem key={role.title} hoverLift className="h-full">
-                <article className="space-y-3.5 rounded-none border border-dust/25 bg-surface p-7">
+                <article className="h-full space-y-3.5 rounded-none border border-dust/25 bg-surface p-7">
                   <h3 className="font-heading text-lg font-semibold">{role.title}</h3>
                   <p className="text-[15px] leading-relaxed text-ink-soft">
                     {role.body}
