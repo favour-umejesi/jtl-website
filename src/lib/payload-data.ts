@@ -14,6 +14,7 @@ import {
   posts as staticPosts,
   about,
   home,
+  joinUs,
   type Post,
 } from "./content";
 import { org } from "./site";
@@ -228,6 +229,8 @@ export type SiteSettings = {
   phone: string;
   location: string;
   donateUrl: string;
+  /** "Fill out the interest form" button target on the Join Us page. */
+  volunteerFormUrl: string;
   socials: { facebook: string; instagram: string; linkedin: string };
   /** "Our impact so far" metrics on the Home and Impact pages. */
   impactStats: ImpactStat[];
@@ -263,6 +266,7 @@ export const getSettings = unstable_cache(
         phone: pick(s.phone, org.phone),
         location: pick(s.location, org.location),
         donateUrl: pick(s.donateUrl, org.donateUrl),
+        volunteerFormUrl: pick(s.volunteerFormUrl, joinUs.formUrl),
         socials: {
           facebook: pick(socials.facebook, org.socials.facebook),
           instagram: pick(socials.instagram, org.socials.instagram),
@@ -279,6 +283,7 @@ export const getSettings = unstable_cache(
         phone: org.phone,
         location: org.location,
         donateUrl: org.donateUrl,
+        volunteerFormUrl: joinUs.formUrl,
         socials: { ...org.socials },
         impactStats: staticImpactStats(),
       };

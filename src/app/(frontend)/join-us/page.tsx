@@ -4,11 +4,13 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { joinUs } from "@/lib/content";
 import { org } from "@/lib/site";
+import { getSettings } from "@/lib/payload-data";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/motion";
 
 export const metadata: Metadata = { title: "Join Us" };
 
-export default function JoinUsPage() {
+export default async function JoinUsPage() {
+  const settings = await getSettings();
   return (
     <>
       <PageHeader {...joinUs.header} />
@@ -65,7 +67,7 @@ export default function JoinUsPage() {
         ctas={[
           {
             label: "Fill out the interest form",
-            href: joinUs.formUrl,
+            href: settings.volunteerFormUrl,
             variant: "primary",
           },
           { label: "Contact us", href: `mailto:${org.email}`, variant: "outline" },

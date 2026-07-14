@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { home } from "@/lib/content";
+import { home, joinUs } from "@/lib/content";
 
 export const Settings: GlobalConfig = {
   slug: "settings",
@@ -15,6 +15,9 @@ export const Settings: GlobalConfig = {
       ({ doc }) => {
         if (!Array.isArray(doc?.impactStats) || doc.impactStats.length === 0) {
           doc.impactStats = home.impactStats.map((s) => ({ ...s }));
+        }
+        if (typeof doc?.volunteerFormUrl !== "string" || !doc.volunteerFormUrl.trim()) {
+          doc.volunteerFormUrl = joinUs.formUrl;
         }
         return doc;
       },
@@ -63,6 +66,16 @@ export const Settings: GlobalConfig = {
     },
     { name: "location", type: "text", defaultValue: "Abuja, Nigeria" },
     { name: "donateUrl", type: "text", label: "Donate URL (GoFundMe)" },
+    {
+      name: "volunteerFormUrl",
+      type: "text",
+      label: "Volunteer application form URL",
+      defaultValue: joinUs.formUrl,
+      admin: {
+        description:
+          'Where the "Fill out the interest form" button on the Join Us page sends people (e.g. a Google Form link).',
+      },
+    },
     {
       name: "socials",
       type: "group",
