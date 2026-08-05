@@ -155,14 +155,14 @@ export const about = {
     },
   ],
   team: [
-    { name: "Olohi John", role: "Founder", photo: "/images/team/olohi.jpeg" },
-    { name: "Shalom Mhanda", role: "Tech Lead", photo: "/images/team/shalom.jpg" },
-    { name: "Oyale John", role: "Project Manager", photo: "/images/team/oyale.jpg" },
-    { name: "Favour Hosea", role: "Education Specialist", photo: "/images/team/favour-hosea.jpg" },
-    { name: "Agaba Great John", role: "Education Specialist", photo: "/images/team/agaba.jpg" },
-    { name: "Favour Umejesi", role: "Web Developer", photo: "/images/team/favour-umejesi.jpg" },
-    { name: "Darasimi Ikuyetijo", role: "Article Writer", photo: "/images/team/darasimi.jpg" },
-    { name: "Ifeoma Okolo", role: "Article Writer", photo: "/images/team/ifeoma.jpg" },
+    { name: "Olohi John", role: "Founder", photo: "/media/olohi.jpeg" },
+    { name: "Shalom Mhanda", role: "Tech Lead", photo: "/media/shalom.jpg" },
+    { name: "Oyale John", role: "Project Manager", photo: "/media/oyale.jpg" },
+    { name: "Favour Hosea", role: "Education Specialist", photo: "/media/favour-hosea.jpg" },
+    { name: "Agaba Great John", role: "Education Specialist", photo: "/media/agaba.jpg" },
+    { name: "Favour Umejesi", role: "Web Developer", photo: "/media/favour-umejesi.jpg" },
+    { name: "Darasimi Ikuyetijo", role: "Article Writer", photo: "/media/darasimi.jpg" },
+    { name: "Ifeoma Okolo", role: "Article Writer", photo: "/media/ifeoma.jpg" },
   ],
 };
 
@@ -367,7 +367,7 @@ export type Post = {
   excerpt: string;
   /** e.g. "/images/blog/peace-camp.jpg" */
   image?: string;
-  /** Optional author head-shot, e.g. "/images/team/olohi.jpg" */
+  /** Optional author head-shot, e.g. "/media/olohi.jpg" */
   authorPhoto?: string;
 };
 
@@ -381,7 +381,7 @@ export const posts: Post[] = [
     excerpt:
       "Peace Camp graduates Samuel and Precious begin their academic year after overcoming financial hardship and displacement.",
     image: "/images/blog/nov-13-2025.png",
-    authorPhoto: "/images/team/favour-umejesi.jpg",
+    authorPhoto: "/media/favour-umejesi.jpg",
   },
   {
     slug: "peace-camp-jtl-2025",
@@ -392,7 +392,7 @@ export const posts: Post[] = [
     excerpt:
       "A six-week summer camp served 20 children in Kwali, Abuja — academic enrichment, confidence-building, and mentorship.",
     image: "/images/blog/aug-1-2025.jpg",
-    authorPhoto: "/images/team/olohi.jpeg",
+    authorPhoto: "/media/olohi.jpeg",
   },
   {
     slug: "emmanuel-and-godiya",
@@ -403,7 +403,7 @@ export const posts: Post[] = [
     excerpt:
       "Two brothers raised by their grandmother received home tutoring, then sponsorship and mentorship for elementary school.",
     image: "/images/blog/mar-30-2025.jpg",
-    authorPhoto: "/images/team/olohi.jpeg",
+    authorPhoto: "/media/olohi.jpeg",
   },
 ];
 

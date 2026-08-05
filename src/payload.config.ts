@@ -64,22 +64,24 @@ export default buildConfig({
     // schema (and migrations once you add them) and must never alter the DB.
     push: process.env.NODE_ENV !== "production",
   }),
+  // Cap uploads at 20MB: media is stored in git and GitHub hard-rejects pushes
+  // with files over 100MB, at which point an oversized upload could never be
+  // deployed and would need history rewriting to remove.
+  upload: {
+    abortOnLimit: true,
+    limits: { fileSize: 20 * 1024 * 1024 },
+  },
   plugins: [
-    // Stores uploaded files in Vercel Blob instead of the local disk, which is
-    // ephemeral/read-only on Vercel. Records still live in Neon (Postgres);
-    // only the file bytes go to Blob. Disabled locally when no token is set,
-    // so `npm run dev` keeps using the disk unless you add BLOB_READ_WRITE_TOKEN.
+    // The Vercel Blob adapter is retired — media lives in the git-tracked
+    // public/media folder (see src/collections/Media.ts). The plugin stays
+    // registered, disabled, only so alwaysInsertFields keeps the `prefix`
+    // column it added to the media table from being dropped by dev schema
+    // pushes.
     vercelBlobStorage({
-      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
-      // Keep the `prefix` schema field present even when the plugin is disabled
-      // locally (no token), so dev and production share one schema and a local
-      // `npm run dev` never drops the column production relies on.
+      enabled: false,
       alwaysInsertFields: true,
-      // Upload straight from the browser to Blob, bypassing Vercel's ~4.5MB
-      // serverless request-body limit (which otherwise fails larger images).
-      clientUploads: true,
       collections: { media: true },
-      token: process.env.BLOB_READ_WRITE_TOKEN,
+      token: undefined,
     }),
   ],
   sharp,

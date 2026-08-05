@@ -93,7 +93,7 @@ export default async function AboutPage() {
               </blockquote>
               <figcaption className="flex items-center gap-3.5">
                 <ImagePlaceholder
-                  src="/images/team/olohi.jpeg"
+                  src="/media/olohi.jpeg"
                   rounded="rounded-full"
                   className="size-11 shrink-0"
                   label="Olohi John"

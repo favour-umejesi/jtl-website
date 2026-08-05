@@ -10,15 +10,30 @@ const nextConfig: NextConfig = {
       { source: "/blog/:slug", destination: "/news/:slug", permanent: true },
     ];
   },
-  images: {
-    // Payload serves Blob-stored media from the Vercel Blob public domain;
-    // next/image blocks remote hosts unless they're allowlisted here.
-    remotePatterns: [
+  // Payload generates /api/media/file/<name> URLs, but the files themselves
+  // are git-tracked in public/media. Array-form rewrites run after public
+  // files and before dynamic routes, so this serves media straight from the
+  // static/CDN layer without ever invoking the /api/[...slug] function.
+  async rewrites() {
+    return [
       {
-        protocol: "https",
-        hostname: "**.public.blob.vercel-storage.com",
+        source: "/api/media/file/:filename*",
+        destination: "/media/:filename*",
       },
-    ],
+    ];
+  },
+  // Static responses carry no Cache-Control by default. A short browser TTL
+  // (not immutable: filenames are reused when an image is re-uploaded) with a
+  // long stale-while-revalidate keeps repeat image loads off the network.
+  async headers() {
+    const mediaCache = {
+      key: "Cache-Control",
+      value: "public, max-age=86400, stale-while-revalidate=604800",
+    };
+    return [
+      { source: "/media/:filename*", headers: [mediaCache] },
+      { source: "/api/media/file/:filename*", headers: [mediaCache] },
+    ];
   },
 };
 
