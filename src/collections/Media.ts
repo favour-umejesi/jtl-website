@@ -1,43 +1,19 @@
-import path from "path";
-import { fileURLToPath } from "url";
+import type { CollectionConfig } from "payload";
 
-import { APIError, type CollectionConfig } from "payload";
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Media bytes live in the git-tracked public/media folder and ship with each
-// deploy (served statically via the rewrite in next.config.ts). Vercel's
-// filesystem is read-only, so any operation that writes or deletes a file only
-// works locally: upload in `npm run dev`, commit the file in public/media,
-// push, and let the deploy finish BEFORE attaching the image to content — the
-// shared database sees the record immediately, but production only gets the
-// file once the deploy lands. Never swap file bytes by hand; replacing an
-// image outside the admin leaves the stored width/height/filesize stale.
-const fsIsReadOnly = Boolean(process.env.VERCEL);
-
+// File bytes are stored in the media_blobs table in Neon by the storage
+// adapter in src/lib/neon-media-storage.ts (wired up via cloudStoragePlugin in
+// payload.config.ts), so images can be uploaded straight from the deployed
+// admin and are servable the moment the upload finishes — no commit or deploy
+// involved. Files that predate database storage live in the git-tracked
+// public/media folder; the adapter's static handler redirects any filename it
+// doesn't find in the table to that static path.
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
     read: () => true,
-    create: () => !fsIsReadOnly,
-    delete: () => !fsIsReadOnly,
   },
   upload: {
-    staticDir: path.resolve(dirname, "../../public/media"),
     mimeTypes: ["image/*"],
-  },
-  hooks: {
-    beforeChange: [
-      ({ data, req }) => {
-        if (fsIsReadOnly && req.file) {
-          throw new APIError(
-            "Image files can't be added or replaced from the deployed admin — upload in a local dev session, commit the file in public/media, and push.",
-            400,
-          );
-        }
-        return data;
-      },
-    ],
   },
   fields: [
     { name: "alt", type: "text", label: "Alt text" },

@@ -10,29 +10,34 @@ const nextConfig: NextConfig = {
       { source: "/blog/:slug", destination: "/news/:slug", permanent: true },
     ];
   },
-  // Payload generates /api/media/file/<name> URLs, but the files themselves
-  // are git-tracked in public/media. Array-form rewrites run after public
-  // files and before dynamic routes, so this serves media straight from the
-  // static/CDN layer without ever invoking the /api/[...slug] function.
-  async rewrites() {
+  // Media requests (/api/media/file/<name>) go through Payload's catch-all
+  // route to the storage adapter in src/lib/neon-media-storage.ts, which
+  // streams new uploads from the media_blobs table and redirects legacy
+  // filenames to the static /media path. Cache-Control below matches what the
+  // adapter sets (keep them in sync): s-maxage lets Vercel's CDN cache the
+  // function responses; the /media entry covers the git-tracked legacy files,
+  // which carry no Cache-Control by default. Short TTLs, not immutable —
+  // filenames can be reused when an image is replaced.
+  async headers() {
     return [
       {
-        source: "/api/media/file/:filename*",
-        destination: "/media/:filename*",
+        source: "/media/:filename*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
       },
-    ];
-  },
-  // Static responses carry no Cache-Control by default. A short browser TTL
-  // (not immutable: filenames are reused when an image is re-uploaded) with a
-  // long stale-while-revalidate keeps repeat image loads off the network.
-  async headers() {
-    const mediaCache = {
-      key: "Cache-Control",
-      value: "public, max-age=86400, stale-while-revalidate=604800",
-    };
-    return [
-      { source: "/media/:filename*", headers: [mediaCache] },
-      { source: "/api/media/file/:filename*", headers: [mediaCache] },
+      {
+        source: "/api/media/file/:filename*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
     ];
   },
 };

@@ -2,8 +2,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { cloudStoragePlugin } from "@payloadcms/plugin-cloud-storage";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { buildConfig } from "payload";
 import sharp from "sharp";
@@ -18,6 +18,7 @@ import { Partners } from "./collections/Partners";
 import { TeamMembers } from "./collections/TeamMembers";
 import { Settings } from "./globals/Settings";
 import { SubscribeEmail } from "./globals/SubscribeEmail";
+import { neonMediaAdapter, registerMediaBlobsTable } from "./lib/neon-media-storage";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -63,25 +64,29 @@ export default buildConfig({
     // Auto-push schema in dev only. Production runs against the existing Neon
     // schema (and migrations once you add them) and must never alter the DB.
     push: process.env.NODE_ENV !== "production",
+    afterSchemaInit: [registerMediaBlobsTable],
   }),
-  // Cap uploads at 20MB: media is stored in git and GitHub hard-rejects pushes
-  // with files over 100MB, at which point an oversized upload could never be
-  // deployed and would need history rewriting to remove.
+  // 10MB cap. Heads-up for deployed-admin uploads: Vercel caps function
+  // request bodies at ~4.5MB on every plan, so files above that are rejected
+  // by the platform before Payload sees them — upload those from a local dev
+  // session instead (they store in the shared Neon DB either way). Serving is
+  // not capped: the storage adapter streams file responses, which exempts
+  // them from Vercel's 4.5MB buffered-response limit.
   upload: {
     abortOnLimit: true,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 },
   },
   plugins: [
-    // The Vercel Blob adapter is retired — media lives in the git-tracked
-    // public/media folder (see src/collections/Media.ts). The plugin stays
-    // registered, disabled, only so alwaysInsertFields keeps the `prefix`
-    // column it added to the media table from being dropped by dev schema
-    // pushes.
-    vercelBlobStorage({
-      enabled: false,
-      alwaysInsertFields: true,
-      collections: { media: true },
-      token: undefined,
+    // Media bytes live in the media_blobs table in Neon (see
+    // src/lib/neon-media-storage.ts) so staff can upload from the deployed
+    // admin. The empty `prefix` keeps the prefix column (added back when media
+    // used the Vercel Blob adapter, and '' on every existing row) in the
+    // collection schema — when the plugin is enabled, alwaysInsertFields alone
+    // doesn't insert it, and dropping the column would break deployed code.
+    cloudStoragePlugin({
+      collections: {
+        media: { adapter: neonMediaAdapter, disableLocalStorage: true, prefix: "" },
+      },
     }),
   ],
   sharp,
