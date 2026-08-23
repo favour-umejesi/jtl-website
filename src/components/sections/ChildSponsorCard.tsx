@@ -12,7 +12,7 @@ import {
 export function ChildSponsorCard({ child }: { child: DonateChild }) {
   const copy = childSponsorshipCopy(child);
   const highlightMatch = copy.bio.match(
-    /^(.*?)(\$\d+ will cover all six years of .+? elementary education\.)(.*)$/s,
+    /^(.*?)(\$\d+ will cover all six years of .+? elementary education\.)(.*)$/,
   );
 
   return (
