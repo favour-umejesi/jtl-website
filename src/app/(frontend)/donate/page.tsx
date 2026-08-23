@@ -98,7 +98,7 @@ export default function DonatePage() {
 
           {/* Sponsor a Child — child bios */}
           <div id="sponsor-a-child" className="scroll-mt-24 space-y-8 pt-6">
-            <Reveal className="max-w-3xl space-y-4">
+            <Reveal className="space-y-4">
               <h3 className="font-heading text-2xl font-semibold text-purple md:text-3xl">
                 Sponsor a Child
               </h3>

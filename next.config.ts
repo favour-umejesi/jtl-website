@@ -2,6 +2,18 @@ import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
+  // Keep sharp outside the Turbopack bundle so its native .node loader can
+  // resolve optional platform packages at runtime.
+  serverExternalPackages: ["sharp"],
+  // sharp@0.35+ loads libvips from a sibling package via dlopen. Next's file
+  // tracer often misses those .so files, which causes Vercel 500s:
+  // ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3 (see lovell/sharp#4567).
+  outputFileTracingIncludes: {
+    "/**": [
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+      "./node_modules/@img/sharp-linux-x64/**/*",
+    ],
+  },
   // The public blog was retired; blogs are now emailed to subscribers.
   // Old bookmarks and indexed links land on News instead.
   async redirects() {

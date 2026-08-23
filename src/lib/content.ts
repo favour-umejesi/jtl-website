@@ -321,7 +321,7 @@ export const donate = {
     giveToJtl: {
       title: "Give to JTL",
       blurb:
-        "Wanna support JTL but have less than $65, simply contribute towards the \"Education Bank\". Your donation would go towards providing staff support, supplementing a child's sponsorship, helping JTL plan more outreaches, or expanding JTL's partnerships around the world.",
+        "Not ready to sponsor a full year of a child's education? Contribute to JTL by giving $10 or more directly to JTL funds. Your donation will be used to supplement a child's education, support our staff, fund outreach programs, expand partnerships, and meet other needs across our work.",
       ctaLabel: "Give to JTL",
     },
   },
@@ -334,7 +334,7 @@ export const donate = {
     {
       id: "abubakar",
       firstName: "Abubakar",
-      bio: "Abubakar has not yet started elementary school and needs support to begin his education. At MathLove 2026, he showed that he is eager to learn, adapts well to new lessons, and regularly helped the children around him. $390 will cover all six years of Abubakar's elementary education.",
+      bio: "Abubakar has not yet started elementary school and needs support to begin his education. At MathLove 2026, he showed that he is eager to learn, adapts well to new lessons, and regularly helped the children around him.",
       yearsNeeded: 6,
       gofundmeUrl: "https://www.gofundme.com/f/abubakar-sponsorship-fund",
       photo: "",
@@ -342,7 +342,7 @@ export const donate = {
     {
       id: "abigail",
       firstName: "Abigail",
-      bio: "Abigail is not currently in school and needs support to begin her elementary education. At MathLove 2026, she grew from not yet saying the alphabet in English to helping interpret for classmates, showing a genuine love for learning. $390 will cover all six years of Abigail's elementary education.",
+      bio: "Abigail is not currently in school and needs support to begin her elementary education. At MathLove 2026, she grew from not yet saying the alphabet in English to helping interpret for classmates, showing a genuine love for learning.",
       yearsNeeded: 6,
       gofundmeUrl: "https://gofund.me/6b7d1f1e8",
       photo: "",
@@ -350,14 +350,14 @@ export const donate = {
     {
       id: "muhamad",
       firstName: "Muhamad",
-      bio: "Muhamad has never attended school. Born to Fulani parents in rural Kwali, Nigeria, he participated in MathLove 2026, where his instructor described him as having \"a particularly unique love for learning.\" $390 will cover all six years of Muhamad's elementary education.",
+      bio: "Muhamad has never attended school. Born to Fulani parents in rural Kwali, Nigeria, he participated in MathLove 2026, where his instructor described him as having \"a particularly unique love for learning.\"",
       yearsNeeded: 6,
       gofundmeUrl: "https://gofund.me/a7da7ee16",
       photo: "",
     },
   ] satisfies DonateChild[],
   disclaimer:
-    "Every gift goes toward camp supplies, scholarships, and mentorship for children in Kwali.",
+    "Every gift goes toward camp supplies, scholarships, and mentorship for children at JTL.",
 };
 
 /** Builds display copy for a child sponsorship card. */

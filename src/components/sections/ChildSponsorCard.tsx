@@ -11,9 +11,6 @@ import {
  */
 export function ChildSponsorCard({ child }: { child: DonateChild }) {
   const copy = childSponsorshipCopy(child);
-  const highlightMatch = copy.bio.match(
-    /^(.*?)(\$\d+ will cover all six years of .+? elementary education\.)(.*)$/,
-  );
 
   return (
     <article className="flex h-full flex-col space-y-4 rounded-none border border-dust/30 bg-surface p-7 transition-shadow hover:shadow-lg hover:shadow-purple/5">
@@ -29,19 +26,7 @@ export function ChildSponsorCard({ child }: { child: DonateChild }) {
       </div>
 
       <div className="flex flex-1 flex-col space-y-3 text-left">
-        <p className="text-[15px] leading-relaxed text-ink-soft">
-          {highlightMatch ? (
-            <>
-              {highlightMatch[1]}
-              <span className="font-semibold text-purple">
-                {highlightMatch[2]}
-              </span>
-              {highlightMatch[3]}
-            </>
-          ) : (
-            copy.bio
-          )}
-        </p>
+        <p className="text-[15px] leading-relaxed text-ink-soft">{copy.bio}</p>
 
         <dl className="space-y-1.5 border-t border-dust/30 pt-3 text-[13px] text-ink-soft">
           <div className="flex justify-between gap-3">
