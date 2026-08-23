@@ -35,6 +35,8 @@ export function Button({
   const reduce = useReducedMotion();
   const classes = `inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold transition-colors ${variantClasses[variant]} ${className}`;
   const isExternal = href.startsWith("http") || href.startsWith("mailto:");
+  // Native <a> for in-page hashes — Next.js Link often skips scrolling to #ids
+  const isHash = href.startsWith("#");
 
   const motionProps = {
     whileHover: reduce ? undefined : { scale: 1.04 },
@@ -42,12 +44,13 @@ export function Button({
     transition: { type: "spring" as const, stiffness: 400, damping: 17 },
   };
 
-  if (isExternal) {
+  if (isExternal || isHash) {
     return (
       <motion.a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...(isExternal
+          ? { target: "_blank" as const, rel: "noopener noreferrer" }
+          : {})}
         className={classes}
         {...motionProps}
       >

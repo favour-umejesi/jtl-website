@@ -10,6 +10,7 @@ import {
   ourWork,
   impact,
   donate,
+  childSponsorshipCopy,
   joinUs,
   posts,
 } from "./content";
@@ -58,7 +59,19 @@ export const searchIndex: SearchDoc[] = [
     title: "Donate",
     href: "/donate",
     excerpt: donate.header.body,
-    keywords: join([donate.header.title, donate.header.body, ...donate.tiers.map((t) => `${t.amount} ${t.desc}`)]),
+    keywords: join([
+      donate.header.title,
+      donate.header.body,
+      donate.options.sponsorChild.title,
+      donate.options.sponsorChild.blurb,
+      donate.options.giveToJtl.title,
+      donate.options.giveToJtl.blurb,
+      donate.sponsorSection.intro,
+      ...donate.children.map((c) => {
+        const copy = childSponsorshipCopy(c);
+        return `${c.firstName} ${copy.title} ${copy.bio}`;
+      }),
+    ]),
   },
   {
     title: "Join Us",

@@ -288,30 +288,109 @@ export const impact = {
   },
 };
 
+/** Cost of one full year of elementary education sponsorship. */
+export const SPONSORSHIP_COST_PER_YEAR = 65;
+
+export type DonateChild = {
+  id: string;
+  firstName: string;
+  /** Short 2–3 sentence teaser for the website; full story lives on GoFundMe. */
+  bio: string;
+  /** Years of education still needed (goal = yearsNeeded × $65). */
+  yearsNeeded: number;
+  gofundmeUrl: string;
+  /** Optional photo path under /images or /media; empty uses Avatar fallback. */
+  photo: string;
+};
+
 export const donate = {
   header: {
     eyebrow: "Support Our Mission",
     title: "Literacy is not a privilege, it's a right",
-    body: "In rural Nigeria, over 10.5 million children are out of school, often because families can't afford the resources or hold misconceptions about education. Your gift sponsors a child through MathLove Camp and into the classroom.",
+    body: "In rural Nigeria, over 10.5 million children are out of school, often because families can't afford the resources or hold misconceptions about education. Scroll down to see how you can contribute to JTL's mission.",
     image: "/images/donate-children.jpg",
   },
-  tiers: [
+  options: {
+    sponsorChild: {
+      title: "Sponsor a Child",
+      blurb:
+        "Become a huge part of a child's journey to accessing elementary education. Cover the full cost of a child's six years of elementary education with $390. You can also choose to sponsor a child for just one year, two years, or anywhere in between. $65 covers a child's full cost of attendance for a year.",
+      ctaLabel: "Sponsor a child",
+      ctaHref: "#sponsor-a-child",
+    },
+    giveToJtl: {
+      title: "Give to JTL",
+      blurb:
+        "Wanna support JTL but have less than $65, simply contribute towards the \"Education Bank\". Your donation would go towards providing staff support, supplementing a child's sponsorship, helping JTL plan more outreaches, or expanding JTL's partnerships around the world.",
+      ctaLabel: "Give to JTL",
+    },
+  },
+  sponsorSection: {
+    eyebrow: "How you can help",
+    intro:
+      "At JTL, children are more than numbers. Each child has their own story, interests, talents, and potential. We believe every child should have the opportunity to access an education, and sponsorship helps make that possible.\n\nBelow are children from our MathLove camp who are currently seeking support to attend school this Fall. Select Learn more on a child's profile to read their full story and contribute toward their education.",
+  },
+  children: [
     {
-      amount: "$20–50",
-      desc: "Provides a child's camp learning supplies, notebooks, pencils, and learning materials.",
+      id: "abubakar",
+      firstName: "Abubakar",
+      bio: "Abubakar has not yet started elementary school and needs support to begin his education. At MathLove 2026, he showed that he is eager to learn, adapts well to new lessons, and regularly helped the children around him. $390 will cover all six years of Abubakar's elementary education.",
+      yearsNeeded: 6,
+      gofundmeUrl: "https://www.gofundme.com/f/abubakar-sponsorship-fund",
+      photo: "",
     },
     {
-      amount: "$80–150",
-      desc: "Covers a child's meals, camp supplies, and digital learning access throughout the camp.",
+      id: "abigail",
+      firstName: "Abigail",
+      bio: "Abigail is not currently in school and needs support to begin her elementary education. At MathLove 2026, she grew from not yet saying the alphabet in English to helping interpret for classmates, showing a genuine love for learning. $390 will cover all six years of Abigail's elementary education.",
+      yearsNeeded: 6,
+      gofundmeUrl: "https://gofund.me/6b7d1f1e8",
+      photo: "",
     },
     {
-      amount: "$150+",
-      desc: "Covers all of the above, and goes toward their first-year tuition in elementary school.",
+      id: "muhamad",
+      firstName: "Muhamad",
+      bio: "Muhamad has never attended school. Born to Fulani parents in rural Kwali, Nigeria, he participated in MathLove 2026, where his instructor described him as having \"a particularly unique love for learning.\" $390 will cover all six years of Muhamad's elementary education.",
+      yearsNeeded: 6,
+      gofundmeUrl: "https://gofund.me/a7da7ee16",
+      photo: "",
     },
-  ],
+  ] satisfies DonateChild[],
   disclaimer:
     "Every gift goes toward camp supplies, scholarships, and mentorship for children in Kwali.",
 };
+
+/** Builds display copy for a child sponsorship card. */
+export function childSponsorshipCopy(child: DonateChild) {
+  const ready = Boolean(child.firstName.trim());
+  const name = child.firstName.trim() || "[Name]";
+  const years = child.yearsNeeded;
+  const goal = years * SPONSORSHIP_COST_PER_YEAR;
+
+  if (!ready) {
+    return {
+      ready: false as const,
+      title: "[Name] Sponsorship Fund",
+      bio: "A MathLove participant seeking support to continue their elementary education. Full profile coming soon.",
+      stats: {
+        goal: null as number | null,
+        years: null as number | null,
+        costPerYear: SPONSORSHIP_COST_PER_YEAR,
+      },
+    };
+  }
+
+  return {
+    ready: true as const,
+    title: `${name}'s Sponsorship Fund`,
+    bio: child.bio.trim(),
+    stats: {
+      goal,
+      years,
+      costPerYear: SPONSORSHIP_COST_PER_YEAR,
+    },
+  };
+}
 
 export const joinUs = {
   formUrl:
@@ -416,7 +495,7 @@ export const news = {
 };
 
 export const newsEvent = {
-  tag: "Upcoming Event · Aug 3–28, 2026",
+  tag: "Currently Ongoing · Aug 3–28, 2026",
   title: "MathLove Camp 2026",
   body: "A four-week summer initiative making mathematics engaging for children with restricted or no access to formal schooling, building foundational skills that last.",
   image: "/images/building-blocks.jpg",

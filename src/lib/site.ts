@@ -26,8 +26,7 @@ export const org = {
   email: "educatenigeriankids@gmail.com",
   phone: "1-413-472-9711",
   location: "Abuja, Nigeria",
-  donateUrl:
-    "https://www.gofundme.com/f/help-a-child-access-education-with-justice-through-literacy",
+  donateUrl: "https://gofund.me/6caa5ab98",
   socials: {
     facebook: "#",
     instagram: "#",
