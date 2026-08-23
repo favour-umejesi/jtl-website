@@ -3,7 +3,7 @@ import { Section, Eyebrow } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { IconChevronDown } from "@/components/ui/icons";
-import { ScrollToButton, ScrollToLink } from "@/components/ui/ScrollTo";
+import { ScrollToButton, ScrollToLink, ClearDonateHash } from "@/components/ui/ScrollTo";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
 import { ChildSponsorCard } from "@/components/sections/ChildSponsorCard";
 import { Reveal, Stagger, StaggerItem, HoverZoom } from "@/components/ui/motion";
@@ -17,6 +17,7 @@ export default function DonatePage() {
 
   return (
     <>
+      <ClearDonateHash />
       {/* Header */}
       <Section tone="purple">
         <div className="space-y-12">

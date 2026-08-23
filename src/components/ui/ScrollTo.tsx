@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 type Variant = "primary" | "yellow" | "outline" | "outlineLight";
@@ -12,6 +12,24 @@ const variantClasses: Record<Variant, string> = {
   outlineLight:
     "border border-current text-current hover:bg-on-purple hover:text-purple",
 };
+
+const DONATE_HASHES = new Set(["#donation-options", "#sponsor-a-child"]);
+
+/** Removes legacy donate #hashes from the URL (keeps path as /donate). */
+export function ClearDonateHash() {
+  useEffect(() => {
+    const { hash } = window.location;
+    if (!DONATE_HASHES.has(hash)) return;
+
+    const id = hash.slice(1);
+    const target = document.getElementById(id);
+    window.history.replaceState(null, "", window.location.pathname);
+    // Honor the old deep link once, then leave the URL clean.
+    target?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  return null;
+}
 
 /**
  * Scrolls to an in-page section without appending a #hash to the URL.
