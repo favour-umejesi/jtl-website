@@ -316,7 +316,8 @@ export const donate = {
       blurb:
         "Become a huge part of a child's journey to accessing elementary education. Cover the full cost of a child's six years of elementary education with $390. You can also choose to sponsor a child for just one year, two years, or anywhere in between. $65 covers a child's full cost of attendance for a year.",
       ctaLabel: "Sponsor a child",
-      ctaHref: "#sponsor-a-child",
+      // Scrolls to #sponsor-a-child without changing the URL (see ScrollToButton).
+      targetId: "sponsor-a-child",
     },
     giveToJtl: {
       title: "Give to JTL",

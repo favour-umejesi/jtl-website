@@ -3,6 +3,7 @@ import { Section, Eyebrow } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { IconChevronDown } from "@/components/ui/icons";
+import { ScrollToButton, ScrollToLink } from "@/components/ui/ScrollTo";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
 import { ChildSponsorCard } from "@/components/sections/ChildSponsorCard";
 import { Reveal, Stagger, StaggerItem, HoverZoom } from "@/components/ui/motion";
@@ -28,9 +29,9 @@ export default function DonatePage() {
               <p className="text-lg leading-relaxed text-dust">
                 {donate.header.body}
               </p>
-              <Button href="#donation-options" variant="yellow">
+              <ScrollToButton targetId="donation-options" variant="yellow">
                 Explore ways to give
-              </Button>
+              </ScrollToButton>
             </Reveal>
             <HoverZoom className="overflow-hidden">
               <ImagePlaceholder
@@ -41,13 +42,13 @@ export default function DonatePage() {
             </HoverZoom>
           </div>
           <Reveal delay={0.15} className="flex justify-center">
-            <a
-              href="#donation-options"
+            <ScrollToLink
+              targetId="donation-options"
               className="inline-flex text-yellow transition-opacity hover:opacity-80"
               aria-label="Scroll to ways to give"
             >
               <IconChevronDown className="size-8 animate-bounce" />
-            </a>
+            </ScrollToLink>
           </Reveal>
         </div>
       </Section>
@@ -69,9 +70,9 @@ export default function DonatePage() {
                   {options.sponsorChild.blurb}
                 </p>
                 <div className="pt-2">
-                  <Button href={options.sponsorChild.ctaHref} variant="primary">
+                  <ScrollToButton targetId="sponsor-a-child" variant="primary">
                     {options.sponsorChild.ctaLabel}
-                  </Button>
+                  </ScrollToButton>
                 </div>
               </article>
             </StaggerItem>
