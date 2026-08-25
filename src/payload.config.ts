@@ -16,6 +16,7 @@ import { Subscribers } from "./collections/Subscribers";
 import { Testimonials } from "./collections/Testimonials";
 import { Partners } from "./collections/Partners";
 import { TeamMembers } from "./collections/TeamMembers";
+import { DonatePage } from "./globals/DonatePage";
 import { Settings } from "./globals/Settings";
 import { SubscribeEmail } from "./globals/SubscribeEmail";
 import { neonMediaAdapter, registerMediaBlobsTable } from "./lib/neon-media-storage";
@@ -32,7 +33,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
   },
   collections: [Users, Media, Posts, Blogs, Subscribers, Testimonials, Partners, TeamMembers],
-  globals: [Settings, SubscribeEmail],
+  globals: [Settings, SubscribeEmail, DonatePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   // Sends admin emails (password resets, invites) via Gmail SMTP when

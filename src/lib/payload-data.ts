@@ -13,8 +13,11 @@ import {
   partners as staticPartners,
   posts as staticPosts,
   about,
+  donate,
   home,
   joinUs,
+  SPONSORSHIP_COST_PER_YEAR,
+  type DonateChild,
   type Post,
 } from "./content";
 import { org } from "./site";
@@ -291,6 +294,59 @@ export const getSettings = unstable_cache(
   },
   ["site-settings"],
   { revalidate: 60, tags: ["settings"] },
+);
+
+export type DonatePageData = {
+  /** Overrides the site-wide donate URL for the "Give to JTL" button; "" when unset. */
+  giveToJtlUrl: string;
+  costPerYear: number;
+  children: DonateChild[];
+};
+
+const staticDonatePage = (): DonatePageData => ({
+  giveToJtlUrl: "",
+  costPerYear: SPONSORSHIP_COST_PER_YEAR,
+  children: donate.children.map((c) => ({ ...c })),
+});
+
+export const getDonatePage = unstable_cache(
+  async (): Promise<DonatePageData> => {
+    try {
+      const payload = await getPayload({ config });
+      const g = (await payload.findGlobal({
+        slug: "donate-page",
+        // depth 1 so each child's photo upload arrives with its URL
+        depth: 1,
+      })) as Record<string, unknown>;
+      const rows = Array.isArray(g.children) ? g.children : [];
+      const children = rows.map(
+        (r: Record<string, unknown>, i: number): DonateChild => ({
+          id: String(r.id ?? i),
+          firstName: String(r.firstName ?? "").trim(),
+          bio: String(r.bio ?? "").trim(),
+          yearsNeeded:
+            typeof r.yearsNeeded === "number" && r.yearsNeeded > 0
+              ? r.yearsNeeded
+              : 6,
+          gofundmeUrl: String(r.gofundmeUrl ?? "").trim(),
+          photo: mediaUrl(r.photo),
+        }),
+      );
+      return {
+        giveToJtlUrl:
+          typeof g.giveToJtlUrl === "string" ? g.giveToJtlUrl.trim() : "",
+        costPerYear:
+          typeof g.costPerYear === "number" && g.costPerYear > 0
+            ? g.costPerYear
+            : SPONSORSHIP_COST_PER_YEAR,
+        children: children.length ? children : staticDonatePage().children,
+      };
+    } catch {
+      return staticDonatePage();
+    }
+  },
+  ["donate-page"],
+  { revalidate: 60, tags: ["donate-page"] },
 );
 
 export async function getPostSlugs(): Promise<string[]> {

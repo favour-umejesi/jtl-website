@@ -9,8 +9,14 @@ import {
  * Compact sponsorship card: short bio teaser + stats.
  * "Learn more" opens the child's GoFundMe for the full story and donation.
  */
-export function ChildSponsorCard({ child }: { child: DonateChild }) {
-  const copy = childSponsorshipCopy(child);
+export function ChildSponsorCard({
+  child,
+  costPerYear,
+}: {
+  child: DonateChild;
+  costPerYear?: number;
+}) {
+  const copy = childSponsorshipCopy(child, costPerYear);
 
   return (
     <article className="flex h-full flex-col space-y-4 rounded-none border border-dust/30 bg-surface p-7 transition-shadow hover:shadow-lg hover:shadow-purple/5">
@@ -20,9 +26,9 @@ export function ChildSponsorCard({ child }: { child: DonateChild }) {
           name={child.firstName || "Child"}
           className="size-24"
         />
-        <h4 className="font-heading text-xl font-semibold text-purple">
+        <h3 className="font-heading text-xl font-semibold text-purple">
           {copy.title}
-        </h4>
+        </h3>
       </div>
 
       <div className="flex flex-1 flex-col space-y-3 text-left">

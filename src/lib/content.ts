@@ -362,11 +362,14 @@ export const donate = {
 };
 
 /** Builds display copy for a child sponsorship card. */
-export function childSponsorshipCopy(child: DonateChild) {
+export function childSponsorshipCopy(
+  child: DonateChild,
+  costPerYear: number = SPONSORSHIP_COST_PER_YEAR,
+) {
   const ready = Boolean(child.firstName.trim());
   const name = child.firstName.trim() || "[Name]";
   const years = child.yearsNeeded;
-  const goal = years * SPONSORSHIP_COST_PER_YEAR;
+  const goal = years * costPerYear;
 
   if (!ready) {
     return {
@@ -376,7 +379,7 @@ export function childSponsorshipCopy(child: DonateChild) {
       stats: {
         goal: null as number | null,
         years: null as number | null,
-        costPerYear: SPONSORSHIP_COST_PER_YEAR,
+        costPerYear,
       },
     };
   }
@@ -388,7 +391,7 @@ export function childSponsorshipCopy(child: DonateChild) {
     stats: {
       goal,
       years,
-      costPerYear: SPONSORSHIP_COST_PER_YEAR,
+      costPerYear,
     },
   };
 }

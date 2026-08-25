@@ -8,12 +8,20 @@ import { NewsletterForm } from "@/components/sections/NewsletterForm";
 import { ChildSponsorCard } from "@/components/sections/ChildSponsorCard";
 import { Reveal, Stagger, StaggerItem, HoverZoom } from "@/components/ui/motion";
 import { donate } from "@/lib/content";
-import { org } from "@/lib/site";
+import { getDonatePage, getSettings } from "@/lib/payload-data";
 
 export const metadata: Metadata = { title: "Donate" };
 
-export default function DonatePage() {
-  const { options, sponsorSection, children, disclaimer } = donate;
+export default async function DonatePage() {
+  const { options, sponsorSection, disclaimer } = donate;
+  // Links, child profiles, and the cost-per-year figure are editable in the
+  // admin panel ("Donate Page" global); static content.ts copy is the fallback.
+  const [settings, donatePage] = await Promise.all([
+    getSettings(),
+    getDonatePage(),
+  ]);
+  const { children, costPerYear } = donatePage;
+  const giveToJtlUrl = donatePage.giveToJtlUrl || settings.donateUrl;
 
   return (
     <>
@@ -64,9 +72,9 @@ export default function DonatePage() {
           <Stagger className="grid gap-6 md:grid-cols-2">
             <StaggerItem hoverLift>
               <article className="flex h-full flex-col space-y-3.5 rounded-none border border-dust/30 bg-surface p-7 transition-shadow hover:shadow-lg hover:shadow-purple/5">
-                <p className="font-heading text-2xl font-semibold text-purple md:text-3xl">
+                <h2 className="font-heading text-2xl font-semibold text-purple md:text-3xl">
                   {options.sponsorChild.title}
-                </p>
+                </h2>
                 <p className="flex-1 text-[15px] leading-relaxed text-ink-soft">
                   {options.sponsorChild.blurb}
                 </p>
@@ -79,14 +87,14 @@ export default function DonatePage() {
             </StaggerItem>
             <StaggerItem hoverLift>
               <article className="flex h-full flex-col space-y-3.5 rounded-none border border-dust/30 bg-surface p-7 transition-shadow hover:shadow-lg hover:shadow-purple/5">
-                <p className="font-heading text-2xl font-semibold text-purple md:text-3xl">
+                <h2 className="font-heading text-2xl font-semibold text-purple md:text-3xl">
                   {options.giveToJtl.title}
-                </p>
+                </h2>
                 <p className="flex-1 text-[15px] leading-relaxed text-ink-soft">
                   {options.giveToJtl.blurb}
                 </p>
                 <div className="pt-2">
-                  <Button href={org.donateUrl} variant="primary">
+                  <Button href={giveToJtlUrl} variant="primary">
                     {options.giveToJtl.ctaLabel}
                   </Button>
                 </div>
@@ -101,9 +109,9 @@ export default function DonatePage() {
           {/* Sponsor a Child — child bios */}
           <div id="sponsor-a-child" className="scroll-mt-24 space-y-8 pt-6">
             <Reveal className="max-w-3xl space-y-4">
-              <h3 className="font-heading text-2xl font-semibold text-purple md:text-3xl">
+              <h2 className="font-heading text-2xl font-semibold text-purple md:text-3xl">
                 Sponsor a Child
-              </h3>
+              </h2>
               {sponsorSection.intro.split("\n\n").map((paragraph) => {
                 const parts = paragraph.split(/(Learn [Mm]ore)/);
                 return (
@@ -131,7 +139,7 @@ export default function DonatePage() {
             <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {children.map((child) => (
                 <StaggerItem key={child.id} hoverLift>
-                  <ChildSponsorCard child={child} />
+                  <ChildSponsorCard child={child} costPerYear={costPerYear} />
                 </StaggerItem>
               ))}
             </Stagger>
