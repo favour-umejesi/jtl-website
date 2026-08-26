@@ -1,11 +1,21 @@
 import type { GlobalConfig } from "payload";
 import { home, joinUs } from "@/lib/content";
+import { revalidateSite } from "@/lib/revalidate";
 
 export const Settings: GlobalConfig = {
   slug: "settings",
   label: "Site Settings",
   access: { read: () => true },
   hooks: {
+    // Settings feed the footer on every page plus the impact stats, the
+    // volunteer-form and donate links; purge the whole site on save so the
+    // change is live on the next page load (see src/lib/revalidate.ts).
+    afterChange: [
+      ({ doc }) => {
+        revalidateSite({ tags: ["settings"], paths: [["/", "layout"]] });
+        return doc;
+      },
+    ],
     // The settings row in the database predates the Impact Metrics field, so
     // defaultValue never kicks in (it only applies to brand-new documents).
     // Filling the defaults on read means the admin form — and the site —

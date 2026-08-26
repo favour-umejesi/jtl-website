@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { donate, SPONSORSHIP_COST_PER_YEAR } from "@/lib/content";
+import { revalidateSite } from "@/lib/revalidate";
 
 export const DonatePage: GlobalConfig = {
   slug: "donate-page",
@@ -7,7 +8,18 @@ export const DonatePage: GlobalConfig = {
   access: { read: () => true },
   admin: {
     description:
-      "The links and child sponsorship profiles on the Donate page. Changes appear on the site within a minute.",
+      "The links and child sponsorship profiles on the Donate page. Changes are live on the site as soon as you save.",
+  },
+  hooks: {
+    // The Donate page is prerendered and cached; purge it on save so the new
+    // photos/bios show on the next page load instead of whenever the cache
+    // happens to refresh (see src/lib/revalidate.ts).
+    afterChange: [
+      ({ doc }) => {
+        revalidateSite({ tags: ["donate-page"], paths: ["/donate"] });
+        return doc;
+      },
+    ],
   },
   fields: [
     {
