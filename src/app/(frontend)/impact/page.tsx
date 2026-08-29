@@ -66,7 +66,7 @@ export default async function ImpactPage() {
 
       <CtaBand
         title="Help us reach the next child"
-        body="Your donation sponsors camp supplies, scholarships, and mentorship for children in Kwali."
+        body="Your donation sponsors camp supplies, scholarships, and mentorship for children in rural communities."
         ctas={[
           { label: "Donate now", href: "/donate", variant: "primary" },
           { label: "Get involved", href: "/join-us", variant: "outline" },

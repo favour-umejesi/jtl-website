@@ -263,7 +263,7 @@ export const impact = {
     eyebrow: "Our Impact",
     title: "What we've accomplished so far",
     intro:
-      "14 children sponsored to school. 8 volunteers engaged. Parents, teachers, and donors making it happen in Kwali.",
+      "14 children sponsored to school. 8 volunteers engaged. Parents, teachers, and donors making it happen in rural communities.",
     image: "/images/impact-header.jpg",
   },
   stats: home.impactStats,
