@@ -5,12 +5,14 @@ import type {
 import { SITE_URL } from "./site-url";
 
 /**
- * Editorial review workflow shared by News (posts) and Blogs.
+ * Editorial review workflow shared by News (posts), Blogs (newsletters) and
+ * custom Emails.
  *
- * Both collections use Payload drafts. Users with the "Admin" title publish
+ * All three collections use Payload drafts. Users with the "Admin" title publish
  * directly. When a Staff user hits Publish, the save is downgraded to a
  * draft and every Admin is emailed a review link — content only goes live on
- * the site (news) or out to the mailing list (blogs) once an Admin publishes.
+ * the site (news) or out to the mailing list (blogs, emails) once an Admin
+ * publishes.
  */
 
 type MaybeUser = { email?: string | null; role?: string | null } | null | undefined;
@@ -25,9 +27,13 @@ export const isAdminUser = (user: MaybeUser) => user?.role === "admin";
  */
 export const requireAdminToPublish: CollectionBeforeChangeHook = async ({
   data,
+  originalDoc,
   req,
   context,
 }) => {
+  // Moving a document to the trash or restoring it (collections with
+  // `trash: true`) is not a publish attempt — no review email for those.
+  if (data?.deletedAt || originalDoc?.deletedAt) return data;
   if (data?._status === "published" && req.user && !isAdminUser(req.user as MaybeUser)) {
     data._status = "draft";
     context.reviewRequested = true;
@@ -45,6 +51,8 @@ export const notifyAdminsOnReviewRequest = (
   async ({ doc, req, context }) => {
     if (!context.reviewRequested) return;
     const { payload } = req;
+    // Custom emails are titled by their subject line.
+    const title = String(doc.title ?? doc.subject ?? "Untitled");
     try {
       const { docs } = await payload.find({
         collection: "users",
@@ -55,7 +63,7 @@ export const notifyAdminsOnReviewRequest = (
       const emails = docs.map((u) => String(u.email ?? "").trim()).filter(Boolean);
       if (!emails.length) {
         payload.logger.warn(
-          `editorial: "${doc.title}" awaits review but no user has the Admin title`,
+          `editorial: "${title}" awaits review but no user has the Admin title`,
         );
         return;
       }
@@ -64,11 +72,11 @@ export const notifyAdminsOnReviewRequest = (
       const reviewUrl = `${SITE_URL}/admin/collections/${collection.slug}/${doc.id}`;
       await payload.sendEmail({
         to: emails,
-        subject: `Review requested: "${doc.title}"`,
+        subject: `Review requested: "${title}"`,
         html: `
   <div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:8px;color:#1a1a1a;">
     <h1 style="color:#310061;font-size:20px;margin:0 0 12px;">A ${collection.label} is ready for review</h1>
-    <p style="font-size:15px;line-height:1.6;"><strong>${submitter}</strong> submitted “${doc.title}” for review. ${collection.onPublish}</p>
+    <p style="font-size:15px;line-height:1.6;"><strong>${submitter}</strong> submitted “${title}” for review. ${collection.onPublish}</p>
     <p style="text-align:center;margin:28px 0;">
       <a href="${reviewUrl}" style="background:#d7ad0d;color:#310061;padding:12px 26px;text-decoration:none;font-weight:bold;border-radius:4px;display:inline-block;">Review and publish</a>
     </p>
@@ -76,9 +84,9 @@ export const notifyAdminsOnReviewRequest = (
   </div>`,
       });
       payload.logger.info(
-        `editorial: review request for "${doc.title}" sent to ${emails.join(", ")}`,
+        `editorial: review request for "${title}" sent to ${emails.join(", ")}`,
       );
     } catch (err) {
-      payload.logger.error({ err }, `editorial: failed to send review request for "${doc.title}"`);
+      payload.logger.error({ err }, `editorial: failed to send review request for "${title}"`);
     }
   };

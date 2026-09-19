@@ -12,6 +12,7 @@ import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
 import { Blogs } from "./collections/Blogs";
+import { Emails } from "./collections/Emails";
 import { Subscribers } from "./collections/Subscribers";
 import { Testimonials } from "./collections/Testimonials";
 import { Partners } from "./collections/Partners";
@@ -20,6 +21,7 @@ import { DonatePage } from "./globals/DonatePage";
 import { Settings } from "./globals/Settings";
 import { SubscribeEmail } from "./globals/SubscribeEmail";
 import { neonMediaAdapter, registerMediaBlobsTable } from "./lib/neon-media-storage";
+import { ensureRowActionsColumn } from "./lib/trash";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -32,8 +34,11 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
   },
-  collections: [Users, Media, Posts, Blogs, Subscribers, Testimonials, Partners, TeamMembers],
+  collections: [Users, Media, Posts, Blogs, Emails, Subscribers, Testimonials, Partners, TeamMembers],
   globals: [Settings, SubscribeEmail, DonatePage],
+  // Keeps the Delete/Restore "Actions" column visible in every list, even for
+  // users whose saved column layout predates it (see src/lib/trash.ts).
+  onInit: ensureRowActionsColumn,
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   // Sends admin emails (password resets, invites) via Gmail SMTP when

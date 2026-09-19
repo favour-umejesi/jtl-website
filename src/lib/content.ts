@@ -180,7 +180,7 @@ export const ourStory = {
     "The initiative, which grew to become JTL, began with a series of casual math and English lessons where the founder, Olohi John, would organize after-school tutorials intended to supplement what the children learned in their classrooms. However, for some of the participants, the tutorials became the only access to education they had.",
     "This is unfortunately the case for over 10 million children in Nigeria, named by UNICEF as the country with the most out-of-school children in the world. As Olohi recounts from the tutorial days, \"seeing so many bright children leave the lessons with little hope of continuing their learning was deeply unsettling.\" It was this unsettling feeling that led to Olohi's founding of Justice Through Literacy, with the support of other talented Nigerians who were passionate about the cause.",
     "JTL has since grown to incorporate summer camps, scholarships, and solid mentorship as its main offerings, all tailored towards empowering children in rural communities to excel in education, hence bridging the socioeconomic literacy divide in Nigeria. The organization has received multiple recognitions, including two awards from Smith College's Conway Entrepreneurship Center.",
-    "Today, Justice Through Literacy continues to grow, committed to creating a Nigeria where all children can learn, dream, and rise—regardless of socioeconomic background.",
+    "Today, Justice Through Literacy continues to grow, committed to creating a Nigeria where all children can learn, dream, and rise, regardless of socioeconomic background.",
   ],
   milestones: [
     {
@@ -191,7 +191,7 @@ export const ourStory = {
     {
       year: "",
       title: "Becoming Justice Through Literacy",
-      body: "As the work grew beyond tutoring, KJEF became Justice Through Literacy—with the support of other talented Nigerians passionate about the cause.",
+      body: "As the work grew beyond tutoring, KJEF became Justice Through Literacy, with the support of other talented Nigerians passionate about the cause.",
     },
     {
       year: "",
@@ -206,7 +206,7 @@ export const ourStory = {
     {
       year: "",
       title: "Looking ahead",
-      body: "JTL continues to grow, committed to a Nigeria where all children can learn, dream, and rise—regardless of socioeconomic background.",
+      body: "JTL continues to grow, committed to a Nigeria where all children can learn, dream, and rise, regardless of socioeconomic background.",
     },
   ],
   founderQuote: {
@@ -253,7 +253,7 @@ export const ourWork = {
     {
       name: "MathLove Camp",
       meta: "August 3–28, 2026",
-      body: "A four-week initiative making mathematics engaging for children with little or no access to formal schooling.",
+      body: "A four-week camp that made mathematics engaging for children with little or no access to formal schooling.",
     },
   ],
 };
@@ -473,7 +473,7 @@ export const posts: Post[] = [
     date: "Aug 1, 2025",
     readTime: "3 min read",
     excerpt:
-      "A six-week summer camp served 20 children in Kwali, Abuja — academic enrichment, confidence-building, and mentorship.",
+      "A six-week summer camp served 20 children in Kwali, Abuja, combining academic enrichment, confidence-building, and mentorship.",
     image: "/images/blog/aug-1-2025.jpg",
     authorPhoto: "/media/olohi.jpeg",
   },
@@ -499,8 +499,8 @@ export const news = {
 };
 
 export const newsEvent = {
-  tag: "Currently Ongoing · Aug 3–28, 2026",
+  tag: "Completed · Aug 3–28, 2026",
   title: "MathLove Camp 2026",
-  body: "A four-week summer initiative making mathematics engaging for children with restricted or no access to formal schooling, building foundational skills that last.",
+  body: "A four-week summer camp that made mathematics engaging for children with restricted or no access to formal schooling, building foundational skills that last.",
   image: "/images/building-blocks.jpg",
 };

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { rowActionsField } from "@/lib/trash";
 
 // File bytes are stored in the media_blobs table in Neon by the storage
 // adapter in src/lib/neon-media-storage.ts (wired up via cloudStoragePlugin in
@@ -9,6 +10,10 @@ import type { CollectionConfig } from "payload";
 // doesn't find in the table to that static path.
 export const Media: CollectionConfig = {
   slug: "media",
+  // Soft delete with a Trash tab and Restore (see src/lib/trash.ts). The file
+  // itself is only removed when a trashed image is deleted permanently.
+  trash: true,
+  admin: { defaultColumns: ["filename", "alt", "createdAt", "rowActions"] },
   access: {
     read: () => true,
   },
@@ -17,5 +22,6 @@ export const Media: CollectionConfig = {
   },
   fields: [
     { name: "alt", type: "text", label: "Alt text" },
+    rowActionsField,
   ],
 };

@@ -3,22 +3,29 @@ import {
   renderSubscribeConfirmationEmail,
   SUBSCRIBE_EMAIL_DEFAULTS,
 } from "@/lib/newsletter-email";
+import { MAILING_LIST_GROUP } from "@/lib/admin-groups";
+import { rowActionsField } from "@/lib/trash";
 import { unsubscribeUrl } from "@/lib/unsubscribe";
 
 /**
- * Mailing-list subscribers. New blogs are emailed to everyone in this list
- * (see the afterChange hook in Blogs.ts). Website signups land here through
+ * Mailing-list subscribers. Newsletters (Blogs.ts) and custom emails
+ * (Emails.ts) are sent to this list — everyone or a hand-picked set. Website signups land here through
  * the `subscribeToMailingList` server action; the original list was imported
  * from the previous site. No public read access — emails are personal data.
  */
 export const Subscribers: CollectionConfig = {
   slug: "subscribers",
+  // Soft delete with a Trash tab and Restore (see src/lib/trash.ts). A trashed
+  // subscriber receives no emails; signing up again on the website restores
+  // them (see subscribeToMailingList in src/lib/actions.ts).
+  trash: true,
   labels: { singular: "Subscriber", plural: "Subscribers" },
   admin: {
+    group: MAILING_LIST_GROUP,
     useAsTitle: "email",
-    defaultColumns: ["email", "name", "source"],
+    defaultColumns: ["email", "name", "source", "rowActions"],
     description:
-      "People who receive new blogs by email. Signups from the website land here automatically; delete a subscriber to unsubscribe them.",
+      "The mailing list: people who receive Newsletters and Custom Emails. Signups from the website land here automatically; delete a subscriber to unsubscribe them — they move to the Trash tab, where they can be restored.",
   },
   hooks: {
     afterChange: [
@@ -74,5 +81,6 @@ export const Subscribers: CollectionConfig = {
         { label: "Contact (imported)", value: "contact" },
       ],
     },
+    rowActionsField,
   ],
 };

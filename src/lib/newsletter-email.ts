@@ -27,7 +27,7 @@ export type NewsletterEmailArgs = {
 };
 
 /** Footer line with the one-click unsubscribe link. */
-function unsubscribeFooterHtml(unsubscribeUrl?: string): string {
+export function unsubscribeFooterHtml(unsubscribeUrl?: string): string {
   // Admin previews have no specific recipient; "#" keeps the layout honest.
   const href = unsubscribeUrl || "#";
   return `Don&#39;t want these emails? <a href="${href}" style="color:${BRAND.muted};text-decoration:underline;">Unsubscribe</a> &mdash; one click and you&#39;re off the list.`;

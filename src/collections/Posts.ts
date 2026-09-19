@@ -1,17 +1,23 @@
 import type { CollectionConfig } from "payload";
 import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
 import { SITE_URL } from "@/lib/site-url";
+import { rowActionsField } from "@/lib/trash";
 
 export const Posts: CollectionConfig = {
   slug: "posts",
   // News is public on the site; blogs live in their own collection and are
-  // emailed to subscribers instead (see Blogs.ts).
-  labels: { singular: "News Article", plural: "News" },
+  // emailed to subscribers instead (see Blogs.ts). The label spells out that
+  // these are the website's articles; the "posts" slug stays so the database
+  // tables keep their names.
+  labels: { singular: "Website Article", plural: "Website Articles (News)" },
+  // Soft delete with a Trash tab and Restore (see src/lib/trash.ts). A trashed
+  // article disappears from the website until it is restored.
+  trash: true,
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "writer", "date", "_status"],
+    defaultColumns: ["title", "writer", "date", "_status", "rowActions"],
     description:
-      "Articles shown on the public News page. Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review. Use the Preview button to see the article as it will appear on the website.",
+      "Articles shown on the website’s public News page — they are not emailed to anyone (for that, use Newsletters or Custom Emails). Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review. Use the Preview button to see the article as it will appear on the website.",
     // "Preview" button in the edit view: shows the article with the real
     // website UI, rendered from the latest saved draft.
     preview: (doc) => (doc?.id ? `${SITE_URL}/news-preview/${doc.id}` : null),
@@ -26,9 +32,13 @@ export const Posts: CollectionConfig = {
     },
   },
   versions: { drafts: true },
-  // Visitors only ever see published articles; logged-in editors see drafts.
+  // Visitors only ever see published articles that are not in the trash;
+  // logged-in editors see drafts and the trash.
   access: {
-    read: ({ req }) => (req.user ? true : { _status: { equals: "published" } }),
+    read: ({ req }) =>
+      req.user
+        ? true
+        : { _status: { equals: "published" }, deletedAt: { exists: false } },
   },
   hooks: {
     beforeChange: [requireAdminToPublish],
@@ -97,5 +107,6 @@ export const Posts: CollectionConfig = {
         position: "sidebar",
       },
     },
+    rowActionsField,
   ],
 };

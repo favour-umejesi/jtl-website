@@ -122,6 +122,6 @@ export async function POST(request: Request) {
   }
   return page(
     "You've been unsubscribed",
-    "You won't receive any more newsletters or updates from us. Resubscribe any time on our website — you're always welcome back.",
+    "You won't receive any more newsletters or updates from us. You can resubscribe any time on our website. You're always welcome back.",
   );
 }

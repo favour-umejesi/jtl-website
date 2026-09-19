@@ -5,8 +5,9 @@ import { Button, useDocumentInfo } from "@payloadcms/ui";
 /**
  * Replaces Payload's icon-only preview button with one labeled "Preview".
  * Blogs use the per-document newsletter preview (the default basePath), News
- * passes basePath "/news-preview", and the Subscriber Welcome Email global
- * passes its fixed preview URL via clientProps.href.
+ * and Custom Emails pass their own basePath ("/news-preview",
+ * "/email-preview"), and the Subscriber Welcome Email global passes its fixed
+ * preview URL via clientProps.href.
  */
 export function PreviewLinkButton({
   href,

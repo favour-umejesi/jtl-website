@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { SUBSCRIBE_EMAIL_DEFAULTS } from "@/lib/newsletter-email";
+import { MAILING_LIST_GROUP } from "@/lib/admin-groups";
 import { SITE_URL } from "@/lib/site-url";
 
 /**
@@ -12,6 +13,7 @@ export const SubscribeEmail: GlobalConfig = {
   slug: "subscribe-email",
   label: "Subscriber Welcome Email",
   admin: {
+    group: MAILING_LIST_GROUP,
     description:
       "Sent automatically when someone subscribes on the website. In the body, blank lines start a new paragraph and {name} becomes the subscriber's first name. Use the Preview button to check it before saving copy changes.",
     preview: () => `${SITE_URL}/subscribe-email-preview`,

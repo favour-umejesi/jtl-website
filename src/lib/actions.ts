@@ -13,6 +13,8 @@ import config from "@payload-config";
  * Donate page). Runs server-side via the Payload local API, so the
  * subscribers collection needs no public write access. Re-subscribing an
  * existing email quietly succeeds — we don't reveal who is already on the list.
+ * If staff had moved that subscriber to the trash, signing up again restores
+ * them (their email is still taken, so creating a new row would fail).
  */
 export async function subscribeToMailingList(
   name: string,
@@ -29,11 +31,19 @@ export async function subscribeToMailingList(
       where: { email: { equals: trimmed } },
       limit: 1,
       depth: 0,
+      trash: true,
     });
     if (!docs.length) {
       await payload.create({
         collection: "subscribers",
         data: { name: name.trim(), email: trimmed, source: "website" },
+      });
+    } else if (docs[0].deletedAt) {
+      await payload.update({
+        collection: "subscribers",
+        id: docs[0].id,
+        data: { deletedAt: null },
+        trash: true,
       });
     }
     return { ok: true, message: "Thank you for subscribing!" };

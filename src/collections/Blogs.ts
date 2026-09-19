@@ -1,15 +1,16 @@
 import type { CollectionConfig } from "payload";
 import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
 import { buildNewsletterArgs, renderNewsletterEmail } from "@/lib/newsletter-email";
+import { MAILING_LIST_GROUP } from "@/lib/admin-groups";
 import { SITE_URL } from "@/lib/site-url";
-import { unsubscribeUrl } from "@/lib/unsubscribe";
-
-/** How many individual emails to hand to SMTP at once. */
-const SEND_CONCURRENCY = 8;
+import { resolveRecipients, sendToSubscribers } from "@/lib/subscriber-mailer";
+import { rowActionsField } from "@/lib/trash";
 
 /**
  * Blogs are email newsletters, not web pages: they never appear on the
- * public site. Publishing a blog with "Send to subscribers" ticked emails it
+ * public site, and the admin panel labels them "Newsletters (Blog)" (the
+ * "blogs" slug stays so the database tables keep their names). Publishing a
+ * blog with "Send to subscribers" ticked emails it
  * (once) to the mailing list — either everyone or a hand-picked set of
  * subscribers. Staff publish attempts become drafts and notify the Admins
  * for review (see src/lib/editorial.ts), so nothing is emailed until an
@@ -17,12 +18,15 @@ const SEND_CONCURRENCY = 8;
  */
 export const Blogs: CollectionConfig = {
   slug: "blogs",
-  labels: { singular: "Blog", plural: "Blogs" },
+  labels: { singular: "Newsletter", plural: "Newsletters (Blog)" },
+  // Soft delete with a Trash tab and Restore (see src/lib/trash.ts).
+  trash: true,
   admin: {
+    group: MAILING_LIST_GROUP,
     useAsTitle: "title",
-    defaultColumns: ["title", "writer", "date", "_status", "sentAt"],
+    defaultColumns: ["title", "writer", "date", "_status", "sentAt", "rowActions"],
     description:
-      "Blogs are emailed to subscribers — they do not appear on the website. Staff drafts are emailed only after an Admin reviews and publishes them. Untick “Send to subscribers” to publish without emailing anyone. Use the Preview button to see the email before it goes out.",
+      "Newsletters are blog-style stories emailed to subscribers — they do not appear on the website (for that, use Website Articles). For a plain announcement or message, use Custom Emails instead. Staff drafts are emailed only after an Admin reviews and publishes them. Untick “Send to subscribers” to publish without emailing anyone. Use the Preview button to see the email before it goes out.",
     // "Preview" button in the edit view: opens the newsletter exactly as it
     // would be emailed, rendered from the latest saved draft. Available to
     // every signed-in user — Staff preview their drafts too.
@@ -75,7 +79,7 @@ export const Blogs: CollectionConfig = {
       admin: {
         position: "sidebar",
         description:
-          "Email this blog to the mailing list when it is published. A blog is only ever emailed once.",
+          "Email this newsletter to the mailing list when it is published. A newsletter is only ever emailed once.",
       },
     },
     {
@@ -100,9 +104,10 @@ export const Blogs: CollectionConfig = {
         position: "sidebar",
         condition: (data) =>
           Boolean(data?.sendToSubscribers && data?.sendTo === "selected"),
-        description: "Pick who receives this blog.",
+        description: "Pick who receives this newsletter.",
       },
     },
+    rowActionsField,
     {
       name: "sentAt",
       type: "date",
@@ -119,79 +124,36 @@ export const Blogs: CollectionConfig = {
     afterChange: [
       notifyAdminsOnReviewRequest({
         slug: "blogs",
-        label: "blog",
+        label: "newsletter",
         onPublish:
           "Publishing it will email it to the mailing list (unless “Send to subscribers” is unticked).",
       }),
-      async ({ doc, req, context }) => {
+      async ({ doc, previousDoc, req, context }) => {
         // The sentAt update below re-enters this hook; the flag breaks the loop.
         if (context.skipBlogEmail) return;
+        // Moving a newsletter to the trash or restoring it must never send it.
+        if (doc.deletedAt || previousDoc?.deletedAt) return;
         // Only a published blog is emailed — drafts awaiting review never send.
         if (doc._status !== "published") return;
         if (!doc.sendToSubscribers || doc.sentAt) return;
 
         const { payload } = req;
         try {
-          let recipients: { id: number | string; email: string }[] = [];
-          if (doc.sendTo === "selected") {
-            const ids = (doc.selectedSubscribers ?? []).map(
-              (s: { id?: number | string } | number | string) =>
-                typeof s === "object" ? s.id : s,
-            );
-            if (ids.length) {
-              const { docs } = await payload.find({
-                collection: "subscribers",
-                where: { id: { in: ids } },
-                limit: 1000,
-                depth: 0,
-              });
-              recipients = docs
-                .map((s) => ({ id: s.id, email: String(s.email ?? "").trim() }))
-                .filter((s) => s.email);
-            }
-          } else {
-            const { docs } = await payload.find({
-              collection: "subscribers",
-              limit: 1000,
-              depth: 0,
-            });
-            recipients = docs
-              .map((s) => ({ id: s.id, email: String(s.email ?? "").trim() }))
-              .filter((s) => s.email);
-          }
+          const recipients = await resolveRecipients(doc, payload);
           if (!recipients.length) {
             payload.logger.warn(`blogs: "${doc.title}" published but no recipients matched`);
             return;
           }
 
-          // One email per subscriber (not BCC) so each footer carries that
-          // person's own unsubscribe link and one-click headers.
           const args = await buildNewsletterArgs(doc, payload);
-          let failed = 0;
-          for (let i = 0; i < recipients.length; i += SEND_CONCURRENCY) {
-            await Promise.all(
-              recipients.slice(i, i + SEND_CONCURRENCY).map(async (sub) => {
-                const unsub = unsubscribeUrl(sub.id, sub.email);
-                try {
-                  await payload.sendEmail({
-                    to: sub.email,
-                    subject: doc.title,
-                    html: renderNewsletterEmail({ ...args, unsubscribeUrl: unsub }),
-                    headers: {
-                      "List-Unsubscribe": `<${unsub}>`,
-                      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                    },
-                  });
-                } catch (err) {
-                  failed += 1;
-                  payload.logger.error(
-                    { err },
-                    `blogs: failed to email "${doc.title}" to ${sub.email}`,
-                  );
-                }
-              }),
-            );
-          }
+          const failed = await sendToSubscribers({
+            payload,
+            recipients,
+            subject: doc.title,
+            render: (_sub, unsub) =>
+              renderNewsletterEmail({ ...args, unsubscribeUrl: unsub }),
+            logLabel: `blogs: "${doc.title}"`,
+          });
           if (failed > 0) {
             // sentAt stays empty so publishing again retries the whole list.
             payload.logger.error(
