@@ -1,11 +1,8 @@
 import type { Payload } from "payload";
-import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 
 import { BRAND, emailMasthead, escapeHtml } from "./email-branding";
+import { absoluteUrl as absolute, richTextToEmailHtml } from "./email-rich-text";
 import { SITE_URL } from "./site-url";
-
-const absolute = (url: string) =>
-  url.startsWith("/") ? `${SITE_URL}${url}` : url;
 
 export type NewsletterEmailArgs = {
   title: string;
@@ -128,11 +125,7 @@ export async function buildNewsletterArgs(
 ): Promise<NewsletterEmailArgs> {
   let contentHtml = "";
   try {
-    if (doc.content) {
-      contentHtml = convertLexicalToHTML({
-        data: doc.content as Parameters<typeof convertLexicalToHTML>[0]["data"],
-      });
-    }
+    contentHtml = await richTextToEmailHtml(doc.content, payload);
   } catch (err) {
     payload.logger.error(
       { err },

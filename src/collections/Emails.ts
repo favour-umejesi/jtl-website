@@ -181,7 +181,7 @@ export const Emails: CollectionConfig = {
             return;
           }
 
-          const args = buildCustomEmailArgs(doc, payload);
+          const args = await buildCustomEmailArgs(doc, payload);
           const failed = await sendToSubscribers({
             payload,
             recipients,

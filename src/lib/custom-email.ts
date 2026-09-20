@@ -1,7 +1,7 @@
 import type { Payload } from "payload";
-import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 
 import { BRAND, emailMasthead, escapeHtml } from "./email-branding";
+import { richTextToEmailHtml } from "./email-rich-text";
 import { unsubscribeFooterHtml } from "./newsletter-email";
 
 /** Pre-filled value of the required "Greeting" field (see Emails.ts). */
@@ -31,17 +31,13 @@ export type CustomEmailArgs = {
  * `renderCustomEmail`. Shared by the send hook in Emails.ts and the admin
  * preview route, so the preview always matches the email that goes out.
  */
-export function buildCustomEmailArgs(
+export async function buildCustomEmailArgs(
   doc: CustomEmailLike,
   payload: Payload,
-): CustomEmailArgs {
+): Promise<CustomEmailArgs> {
   let contentHtml = "";
   try {
-    if (doc.content) {
-      contentHtml = convertLexicalToHTML({
-        data: doc.content as Parameters<typeof convertLexicalToHTML>[0]["data"],
-      });
-    }
+    contentHtml = await richTextToEmailHtml(doc.content, payload);
   } catch (err) {
     payload.logger.error({ err }, "custom email: rich text -> HTML failed");
   }

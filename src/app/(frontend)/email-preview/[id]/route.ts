@@ -55,7 +55,7 @@ export async function GET(
   const html =
     banner +
     renderCustomEmail({
-      ...buildCustomEmailArgs(doc as CustomEmailLike, payload),
+      ...(await buildCustomEmailArgs(doc as CustomEmailLike, payload)),
       name: SAMPLE_NAME,
     });
   return new Response(html, {
