@@ -13,10 +13,10 @@ export function EmailPreviewField() {
   const { id } = useDocumentInfo();
   const modified = useFormModified();
 
-  let hint = "Opens the email in a new tab, exactly as subscribers will see it. Nothing is sent.";
-  if (!id) hint = "Click “Save Draft” first — then you can preview the email here. Nothing is sent.";
+  let hint = "Opens the email in a new tab. Nothing is sent.";
+  if (!id) hint = "Click Save Draft first. Then you can preview here.";
   else if (modified)
-    hint = "You have unsaved changes. Click “Save Draft” so the preview shows them.";
+    hint = "Click Save Draft to see your latest changes in the preview.";
 
   return (
     <div

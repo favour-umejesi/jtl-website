@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { rowActionsField } from "@/lib/trash";
+import { rowActionsField, trashForAllDeleteForAdmins } from "@/lib/trash";
 
 // File bytes are stored in the media_blobs table in Neon by the storage
 // adapter in src/lib/neon-media-storage.ts (wired up via cloudStoragePlugin in
@@ -13,15 +13,28 @@ export const Media: CollectionConfig = {
   // Soft delete with a Trash tab and Restore (see src/lib/trash.ts). The file
   // itself is only removed when a trashed image is deleted permanently.
   trash: true,
-  admin: { defaultColumns: ["filename", "alt", "createdAt", "rowActions"] },
+  admin: {
+    defaultColumns: ["filename", "alt", "createdAt", "rowActions"],
+    description:
+      "All images used on the website and in emails. Maximum size is about 4 MB.",
+  },
   access: {
     read: () => true,
+    delete: trashForAllDeleteForAdmins,
   },
   upload: {
     mimeTypes: ["image/*"],
   },
   fields: [
-    { name: "alt", type: "text", label: "Alt text" },
+    {
+      name: "alt",
+      type: "text",
+      label: "Alt text",
+      admin: {
+        description:
+          "Describe the picture in one sentence. Screen readers read it aloud.",
+      },
+    },
     rowActionsField,
   ],
 };

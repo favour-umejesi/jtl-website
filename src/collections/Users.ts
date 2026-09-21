@@ -94,7 +94,7 @@ export const Users: CollectionConfig = {
       // "Staff" can create and edit drafts. Only the user managers above may
       // change someone's title, so staff can't promote themselves.
       name: "role",
-      label: "Title",
+      label: "Role",
       type: "select",
       required: true,
       defaultValue: "staff",
@@ -108,7 +108,7 @@ export const Users: CollectionConfig = {
       },
       admin: {
         description:
-          "Admins review and publish news and blogs. Staff can write and edit drafts.",
+          "Admins review and publish. Staff write drafts and submit them for review.",
       },
     },
   ],

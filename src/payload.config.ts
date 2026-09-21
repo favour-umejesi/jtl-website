@@ -3,7 +3,6 @@ import { fileURLToPath } from "url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { cloudStoragePlugin } from "@payloadcms/plugin-cloud-storage";
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { buildConfig } from "payload";
 import sharp from "sharp";
@@ -21,6 +20,7 @@ import { DonatePage } from "./globals/DonatePage";
 import { Settings } from "./globals/Settings";
 import { SubscribeEmail } from "./globals/SubscribeEmail";
 import { neonMediaAdapter, registerMediaBlobsTable } from "./lib/neon-media-storage";
+import { siteEditor } from "./lib/rich-text-editor";
 import { ensureRowActionsColumn } from "./lib/trash";
 
 const filename = fileURLToPath(import.meta.url);
@@ -39,7 +39,8 @@ export default buildConfig({
   // Keeps the Delete/Restore "Actions" column visible in every list, even for
   // users whose saved column layout predates it (see src/lib/trash.ts).
   onInit: ensureRowActionsColumn,
-  editor: lexicalEditor(),
+  // Always-visible formatting toolbar + highlighter (see rich-text-editor.ts).
+  editor: siteEditor,
   secret: process.env.PAYLOAD_SECRET || "",
   // Sends admin emails (password resets, invites) via Gmail SMTP when
   // SMTP_USER/SMTP_PASS are set. Without them, Payload falls back to logging

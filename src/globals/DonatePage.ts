@@ -8,7 +8,7 @@ export const DonatePage: GlobalConfig = {
   access: { read: () => true },
   admin: {
     description:
-      "The links and child sponsorship profiles on the Donate page. Changes are live on the site as soon as you save.",
+      "Links and child profiles on the Donate page. Changes go live when you save.",
   },
   hooks: {
     // The Donate page is prerendered and cached; purge it on save so the new
@@ -28,7 +28,7 @@ export const DonatePage: GlobalConfig = {
       label: '"Give to JTL" URL (GoFundMe)',
       admin: {
         description:
-          'Where the "Give to JTL" button sends people. Leave empty to use the site-wide Donate URL from Site Settings.',
+          "Where the Give to JTL button goes. Leave blank to use the Donate URL in Site Settings.",
       },
     },
     {
@@ -39,7 +39,7 @@ export const DonatePage: GlobalConfig = {
       defaultValue: SPONSORSHIP_COST_PER_YEAR,
       admin: {
         description:
-          "Cost of one year of elementary education. Each child's sponsorship goal is years of education needed × this amount.",
+          "Cost of one school year. A child’s goal is this amount times their years needed.",
       },
     },
     {
@@ -49,7 +49,7 @@ export const DonatePage: GlobalConfig = {
       labels: { singular: "Child", plural: "Children" },
       admin: {
         description:
-          'The profiles under "Sponsor a Child". Each card shows the photo (or a placeholder avatar while there is none), the short bio, the sponsorship goal, and a "Learn more" button that opens the child\'s GoFundMe page. Leaving the first name empty publishes an anonymous "profile coming soon" card.',
+          "Profiles under Sponsor a Child. Leave the first name blank to show a Profile coming soon card.",
       },
       defaultValue: donate.children.map((c) => ({
         firstName: c.firstName,
@@ -82,7 +82,7 @@ export const DonatePage: GlobalConfig = {
           type: "upload",
           relationTo: "media",
           admin: {
-            description: "Optional — a placeholder avatar shows until a photo is added.",
+            description: "Optional. A placeholder shows until you add one.",
           },
         },
         {
@@ -91,7 +91,7 @@ export const DonatePage: GlobalConfig = {
           label: "Short bio",
           admin: {
             description:
-              "2–3 sentences for the card; the full story lives on the GoFundMe page.",
+              "Two or three sentences. The full story goes on GoFundMe.",
           },
         },
         {

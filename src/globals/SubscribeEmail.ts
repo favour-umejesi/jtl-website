@@ -15,7 +15,7 @@ export const SubscribeEmail: GlobalConfig = {
   admin: {
     group: MAILING_LIST_GROUP,
     description:
-      "Sent automatically when someone subscribes on the website. In the body, blank lines start a new paragraph and {name} becomes the subscriber's first name. Use the Preview button to check it before saving copy changes.",
+      "Sent automatically to new website subscribers. Click Preview to check your changes.",
     preview: () => `${SITE_URL}/subscribe-email-preview`,
     components: {
       elements: {
@@ -38,7 +38,7 @@ export const SubscribeEmail: GlobalConfig = {
       type: "text",
       required: true,
       defaultValue: SUBSCRIBE_EMAIL_DEFAULTS.heading,
-      admin: { description: "The big headline at the top of the email." },
+      admin: { description: "Headline at the top of the email." },
     },
     {
       name: "body",
@@ -48,7 +48,7 @@ export const SubscribeEmail: GlobalConfig = {
       admin: {
         rows: 10,
         description:
-          "Blank lines separate paragraphs. {name} is replaced with the subscriber's first name.",
+          "Leave a blank line between paragraphs. {name} becomes the subscriber’s first name.",
       },
     },
   ],

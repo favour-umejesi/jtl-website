@@ -120,7 +120,7 @@ export function RowTrashCell({
         </span>
       </Button>
       <ConfirmationModal
-        body={`“${name}” will be moved to the Trash. If this is a mistake, open the Trash tab at the top of this list and click Restore.`}
+        body={`“${name}” will move to the Trash. You can restore it from the Trash tab.`}
         confirmLabel="Move to Trash"
         heading="Move to the Trash?"
         modalSlug={modalSlug}

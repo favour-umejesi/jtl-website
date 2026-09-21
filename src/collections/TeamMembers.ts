@@ -1,5 +1,9 @@
 import type { CollectionConfig } from "payload";
-import { publicReadExceptTrash, rowActionsField } from "@/lib/trash";
+import {
+  publicReadExceptTrash,
+  rowActionsField,
+  trashForAllDeleteForAdmins,
+} from "@/lib/trash";
 
 export const TeamMembers: CollectionConfig = {
   slug: "team-members",
@@ -9,13 +13,18 @@ export const TeamMembers: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "role", "status", "rowActions"],
     description:
-      'The people shown under "The people behind JTL" on the About page.',
+      "People shown on the About page. Also the list of authors for articles and newsletters.",
   },
-  access: { read: publicReadExceptTrash },
+  access: { read: publicReadExceptTrash, delete: trashForAllDeleteForAdmins },
   defaultSort: "order",
   fields: [
     { name: "name", type: "text", required: true },
-    { name: "role", type: "text", required: true },
+    {
+      name: "role",
+      label: "Job title",
+      type: "text",
+      required: true,
+    },
     { name: "photo", type: "upload", relationTo: "media" },
     {
       name: "status",
@@ -29,8 +38,9 @@ export const TeamMembers: CollectionConfig = {
     },
     {
       name: "order",
+      label: "Display order",
       type: "number",
-      admin: { description: "Lower numbers show first within each group" },
+      admin: { description: "Lower numbers show first." },
     },
     rowActionsField,
   ],

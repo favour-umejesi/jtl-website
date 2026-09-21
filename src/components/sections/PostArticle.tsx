@@ -1,11 +1,36 @@
 import Link from "next/link";
-import { RichText } from "@payloadcms/richtext-lexical/react";
+import { RichText, type JSXConvertersFunction } from "@payloadcms/richtext-lexical/react";
 import { Section, Eyebrow } from "@/components/ui/Section";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { IconChevronLeft } from "@/components/ui/icons";
 import { LikeButton } from "@/components/sections/LikeButton";
 import { Reveal, HoverZoom } from "@/components/ui/motion";
 import type { PostDetail } from "@/lib/payload-data";
+import { highlightCss } from "@/lib/highlights";
+
+// Highlighter colours from the admin editor (see src/lib/highlights.ts):
+// Payload's converter doesn't know about them, so wrap its text output.
+const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  text: (args) => {
+    const base = defaultConverters.text;
+    const text = typeof base === "function" ? base(args) : null;
+    const css = highlightCss(args.node);
+    if (!css) return text;
+    return (
+      <span
+        style={{
+          backgroundColor: css["background-color"],
+          color: css.color,
+          padding: css.padding,
+          borderRadius: css["border-radius"],
+        }}
+      >
+        {text}
+      </span>
+    );
+  },
+});
 
 export function PostArticle({
   post,
@@ -74,7 +99,10 @@ export function PostArticle({
 
           {hasBody ? (
             <div className="space-y-4 text-base leading-relaxed text-ink-soft [&_a]:text-purple [&_a]:underline [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-ink [&_h3]:font-heading [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-ink [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6">
-              <RichText data={post.content as Parameters<typeof RichText>[0]["data"]} />
+              <RichText
+                converters={converters}
+                data={post.content as Parameters<typeof RichText>[0]["data"]}
+              />
             </div>
           ) : (
             <p className="text-sm italic text-ink-soft">

@@ -2,6 +2,7 @@ import type { Payload } from "payload";
 import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 
 import { escapeHtml } from "./email-branding";
+import { highlightCss } from "./highlights";
 import { SITE_URL } from "./site-url";
 
 type LexicalData = Parameters<typeof convertLexicalToHTML>[0]["data"];
@@ -68,6 +69,17 @@ export async function richTextToEmailHtml(
     data: content as LexicalData,
     converters: ({ defaultConverters }) => ({
       ...defaultConverters,
+      // Highlighter colours: Payload's converter doesn't know about them.
+      text: (args) => {
+        const base = defaultConverters.text;
+        const html = typeof base === "function" ? base(args) : "";
+        const css = highlightCss(args.node);
+        if (!css) return html;
+        const style = Object.entries(css)
+          .map(([prop, value]) => `${prop}:${value}`)
+          .join(";");
+        return `<span style="${style}">${html}</span>`;
+      },
       upload: ({ node }) => {
         const { value, fields } = node as unknown as UploadNode;
         const media =

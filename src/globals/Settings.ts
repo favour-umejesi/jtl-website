@@ -41,7 +41,7 @@ export const Settings: GlobalConfig = {
       labels: { singular: "Metric", plural: "Metrics" },
       admin: {
         description:
-          'Shown under "Our impact so far" on the Home page and at the top of the Impact page. Value is the headline number (e.g. "$11K+", "20+", "3", "50%") — it counts up when scrolled into view. Changes appear on the site within a minute.',
+          "Numbers under Our impact so far on the Home and Impact pages.",
       },
       defaultValue: home.impactStats.map((s) => ({ ...s })),
       fields: [
@@ -64,18 +64,51 @@ export const Settings: GlobalConfig = {
         },
       ],
     },
-    { name: "name", type: "text", defaultValue: "Justice Through Literacy" },
-    { name: "tagline", type: "text", defaultValue: "Bridging the Nigerian Literacy Gap" },
-    { name: "description", type: "textarea" },
+    {
+      name: "name",
+      label: "Organisation name",
+      type: "text",
+      defaultValue: "Justice Through Literacy",
+      admin: { description: "Shown in the website footer." },
+    },
+    // Not read anywhere on the site, so hidden: editing them changed nothing.
+    // Kept in the schema so the stored values survive.
+    {
+      name: "tagline",
+      type: "text",
+      defaultValue: "Bridging the Nigerian Literacy Gap",
+      admin: { hidden: true },
+    },
+    { name: "description", type: "textarea", admin: { hidden: true } },
     {
       type: "row",
       fields: [
-        { name: "email", type: "text", admin: { width: "50%" } },
-        { name: "phone", type: "text", admin: { width: "50%" } },
+        {
+          name: "email",
+          label: "Contact email",
+          type: "text",
+          admin: { width: "50%", description: "Shown in the website footer." },
+        },
+        {
+          name: "phone",
+          label: "Contact phone",
+          type: "text",
+          admin: { width: "50%", description: "Shown in the website footer." },
+        },
       ],
     },
-    { name: "location", type: "text", defaultValue: "Abuja, Nigeria" },
-    { name: "donateUrl", type: "text", label: "Donate URL (GoFundMe)" },
+    {
+      name: "location",
+      type: "text",
+      defaultValue: "Abuja, Nigeria",
+      admin: { description: "Shown in the website footer." },
+    },
+    {
+      name: "donateUrl",
+      type: "text",
+      label: "Donate URL (GoFundMe)",
+      admin: { description: "Where the Donate buttons go." },
+    },
     {
       name: "volunteerFormUrl",
       type: "text",
@@ -83,12 +116,14 @@ export const Settings: GlobalConfig = {
       defaultValue: joinUs.formUrl,
       admin: {
         description:
-          'Where the "Fill out the interest form" button on the Join Us page sends people (e.g. a Google Form link).',
+          "Where the interest form button on the Join Us page goes.",
       },
     },
     {
       name: "socials",
+      label: "Social media links",
       type: "group",
+      admin: { description: "Full links, shown as icons in the website footer." },
       fields: [
         { name: "facebook", type: "text" },
         { name: "instagram", type: "text" },

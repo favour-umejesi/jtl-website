@@ -1,7 +1,22 @@
 import type { CollectionConfig } from "payload";
-import { notifyAdminsOnReviewRequest, requireAdminToPublish } from "@/lib/editorial";
+import {
+  holdStaffPublishForReview,
+  notifyAdminsOnReviewRequest,
+  requireAdminToPublish,
+} from "@/lib/editorial";
+import { keepCurrentLikes } from "@/lib/likes";
 import { SITE_URL } from "@/lib/site-url";
-import { rowActionsField } from "@/lib/trash";
+import { stageFields } from "@/lib/stage";
+import { rowActionsField, trashForAllDeleteForAdmins } from "@/lib/trash";
+
+/** "Peace Camp — JTL 2025!" -> "peace-camp-jtl-2025" */
+const slugify = (text: string) =>
+  text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export const Posts: CollectionConfig = {
   slug: "posts",
@@ -15,9 +30,9 @@ export const Posts: CollectionConfig = {
   trash: true,
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "writer", "date", "_status", "rowActions"],
+    defaultColumns: ["title", "writer", "date", "stage", "rowActions"],
     description:
-      "Articles shown on the website’s public News page — they are not emailed to anyone (for that, use Newsletters or Custom Emails). Staff drafts go live only after an Admin reviews and publishes them — hitting Publish as Staff emails the admins for review. Use the Preview button to see the article as it will appear on the website.",
+      "Articles on the website’s News page. They are not emailed to anyone.",
     // "Preview" button in the edit view: shows the article with the real
     // website UI, rendered from the latest saved draft.
     preview: (doc) => (doc?.id ? `${SITE_URL}/news-preview/${doc.id}` : null),
@@ -39,8 +54,10 @@ export const Posts: CollectionConfig = {
       req.user
         ? true
         : { _status: { equals: "published" }, deletedAt: { exists: false } },
+    delete: trashForAllDeleteForAdmins,
   },
   hooks: {
+    beforeOperation: [holdStaffPublishForReview],
     beforeChange: [requireAdminToPublish],
     afterChange: [
       notifyAdminsOnReviewRequest({
@@ -54,10 +71,26 @@ export const Posts: CollectionConfig = {
     { name: "title", type: "text", required: true },
     {
       name: "slug",
+      label: "Web address (slug)",
       type: "text",
-      required: true,
+      // Not `required`: the admin form would reject a blank box before the
+      // hook below gets to fill it in. The hook means it is never empty.
       unique: true,
-      admin: { description: "URL-friendly id, e.g. peace-camp-jtl-2025" },
+      hooks: {
+        // Editors shouldn't have to hand-write a URL: blank means "make it
+        // from the title". Whatever they do type is tidied into URL form.
+        beforeValidate: [
+          ({ data, value }) => {
+            const source =
+              typeof value === "string" && value.trim() ? value : data?.title;
+            return typeof source === "string" ? slugify(source) : value;
+          },
+        ],
+      },
+      admin: {
+        description:
+          "The end of the article’s link. Leave blank to create it from the title. Do not change it after publishing or shared links will break.",
+      },
     },
     {
       // Legacy field from when news and blogs shared this collection. Hidden
@@ -81,7 +114,7 @@ export const Posts: CollectionConfig = {
       relationTo: "team-members",
       admin: {
         description:
-          "Pick the author from the team members list (managed under Team Members).",
+          "Choose from Team Members.",
       },
     },
     {
@@ -92,21 +125,35 @@ export const Posts: CollectionConfig = {
       type: "text",
       admin: { hidden: true, disableListColumn: true, disableListFilter: true },
     },
-    { name: "date", type: "date" },
-    { name: "readTime", type: "text", admin: { description: 'e.g. "3 min read"' } },
-    { name: "excerpt", type: "textarea", admin: { description: "Lead paragraph shown above the hero image on the article page. The full write-up goes in Content below the image." } },
-    { name: "image", type: "upload", relationTo: "media" },
+    {
+      name: "date",
+      type: "date",
+      defaultValue: () => new Date().toISOString(),
+      admin: { description: "Newest articles show first." },
+    },
+    { name: "readTime", label: "Reading time", type: "text", admin: { description: "Example: 3 min read" } },
+    { name: "excerpt", label: "Introduction", type: "textarea", admin: { description: "Opening paragraph, shown above the main image." } },
+    {
+      name: "image",
+      label: "Main image",
+      type: "upload",
+      relationTo: "media",
+      admin: { description: "Large image near the top of the article." },
+    },
     { name: "content", type: "richText" },
     {
       name: "likes",
       type: "number",
       defaultValue: 0,
+      // Counted directly in the database (see src/lib/likes.ts).
+      hooks: { beforeChange: [keepCurrentLikes] },
       admin: {
         readOnly: true,
-        description: "Reader likes (updated automatically from the site).",
+        description: "Updated automatically.",
         position: "sidebar",
       },
     },
     rowActionsField,
+    ...stageFields,
   ],
 };

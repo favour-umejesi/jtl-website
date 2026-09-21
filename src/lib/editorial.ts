@@ -1,6 +1,7 @@
 import type {
   CollectionAfterChangeHook,
   CollectionBeforeChangeHook,
+  CollectionBeforeOperationHook,
 } from "payload";
 import { SITE_URL } from "./site-url";
 
@@ -12,12 +13,43 @@ import { SITE_URL } from "./site-url";
  * directly. When a Staff user hits Publish, the save is downgraded to a
  * draft and every Admin is emailed a review link — content only goes live on
  * the site (news) or out to the mailing list (blogs, emails) once an Admin
- * publishes.
+ * publishes. If the document is already live, the published version stays
+ * up, untouched, while the Staff edit waits for review.
+ *
+ * Collections using this need all three hooks: `holdStaffPublishForReview`
+ * (beforeOperation), `requireAdminToPublish` (beforeChange) and
+ * `notifyAdminsOnReviewRequest` (afterChange).
  */
 
 type MaybeUser = { email?: string | null; role?: string | null } | null | undefined;
 
 export const isAdminUser = (user: MaybeUser) => user?.role === "admin";
+
+/**
+ * beforeOperation: makes a non-admin's publish attempt on an existing
+ * document a draft save. Changing `_status` alone (below) is not enough:
+ * Payload would still write the edit over the live document — as a draft,
+ * which took a published article off the website until an Admin republished
+ * it. A draft save only adds a new version and leaves the live one alone.
+ * (requireAdminToPublish still covers new documents, which have no live
+ * version to protect.)
+ */
+export const holdStaffPublishForReview: CollectionBeforeOperationHook = ({
+  args,
+  operation,
+  req,
+}) => {
+  if (operation !== "update") return args;
+  const data = args.data as Record<string, unknown> | undefined;
+  if (data?._status !== "published") return args;
+  // Restoring a published document from the trash is not a publish attempt.
+  if ("deletedAt" in data) return args;
+  if (!req.user || isAdminUser(req.user as MaybeUser)) return args;
+  // Payload only saves a draft when the status already says so at this
+  // point, so the downgrade in requireAdminToPublish would come too late.
+  req.context.reviewRequested = true;
+  return { ...args, data: { ...data, _status: "draft" }, draft: true };
+};
 
 /**
  * beforeChange: turns a non-admin's publish attempt into a draft save and
@@ -38,6 +70,11 @@ export const requireAdminToPublish: CollectionBeforeChangeHook = async ({
     data._status = "draft";
     context.reviewRequested = true;
   }
+  // Drives the "In review" stage in the admin (see src/lib/stage.ts):
+  // stamped when a Staff publish is held (here or, for documents that are
+  // already live, in holdStaffPublishForReview), cleared once it is published.
+  if (context.reviewRequested) data.reviewRequestedAt = new Date().toISOString();
+  else if (data?._status === "published") data.reviewRequestedAt = null;
   return data;
 };
 

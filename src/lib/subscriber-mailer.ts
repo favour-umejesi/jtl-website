@@ -52,7 +52,8 @@ export async function resolveRecipients(
 /**
  * One email per subscriber (not BCC) so each footer carries that person's own
  * unsubscribe link and one-click headers. `render` builds the HTML for one
- * recipient. Returns how many sends failed; failures are logged, not thrown.
+ * recipient. Returns the addresses whose send failed; failures are logged,
+ * not thrown.
  */
 export async function sendToSubscribers({
   payload,
@@ -67,8 +68,8 @@ export async function sendToSubscribers({
   render: (recipient: Recipient, unsubscribeUrl: string) => string;
   /** Prefix for log lines, e.g. `blogs: "Title"` */
   logLabel: string;
-}): Promise<number> {
-  let failed = 0;
+}): Promise<string[]> {
+  const failed: string[] = [];
   for (let i = 0; i < recipients.length; i += SEND_CONCURRENCY) {
     await Promise.all(
       recipients.slice(i, i + SEND_CONCURRENCY).map(async (sub) => {
@@ -84,7 +85,7 @@ export async function sendToSubscribers({
             },
           });
         } catch (err) {
-          failed += 1;
+          failed.push(sub.email);
           payload.logger.error({ err }, `${logLabel} failed to send to ${sub.email}`);
         }
       }),

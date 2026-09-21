@@ -4,7 +4,7 @@ import {
   SUBSCRIBE_EMAIL_DEFAULTS,
 } from "@/lib/newsletter-email";
 import { MAILING_LIST_GROUP } from "@/lib/admin-groups";
-import { rowActionsField } from "@/lib/trash";
+import { rowActionsField, trashForAllDeleteForAdmins } from "@/lib/trash";
 import { unsubscribeUrl } from "@/lib/unsubscribe";
 
 /**
@@ -20,12 +20,13 @@ export const Subscribers: CollectionConfig = {
   // them (see subscribeToMailingList in src/lib/actions.ts).
   trash: true,
   labels: { singular: "Subscriber", plural: "Subscribers" },
+  access: { delete: trashForAllDeleteForAdmins },
   admin: {
     group: MAILING_LIST_GROUP,
     useAsTitle: "email",
     defaultColumns: ["email", "name", "source", "rowActions"],
     description:
-      "The mailing list: people who receive Newsletters and Custom Emails. Signups from the website land here automatically; delete a subscriber to unsubscribe them — they move to the Trash tab, where they can be restored.",
+      "Everyone who receives Newsletters and Custom Emails. Website signups are added automatically. Delete a subscriber to unsubscribe them.",
   },
   hooks: {
     afterChange: [
